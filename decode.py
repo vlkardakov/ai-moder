@@ -47,8 +47,9 @@ def redirects(url):
 def decode(url):
     return unquote(unquote(unquote(url)))
 
-def decode_url(url):
+def decode_url(link):
     #suffixes = ("http://","https://","www.","http%3A%2F%2F", "")
+    url = decode(link)
 
     latest = final_from_url(url) #final_from_redirect(final_from_url(final_from_redirect(final_from_url(url))))
     latest = redirects(latest)
