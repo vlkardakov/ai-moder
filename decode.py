@@ -40,10 +40,10 @@ def redirects(url):
     except Exception as e:
         # Обработка других возможных ошибок
         print(f"An unexpected error occurred: {e}")
-        return None
+        return url
 
 def decode(url):
-    return unquote(unquote(url))
+    return unquote(unquote(unquote(url)))
 
 def decode_url(url):
     #suffixes = ("http://","https://","www.","http%3A%2F%2F", "")
