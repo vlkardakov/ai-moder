@@ -4,8 +4,6 @@ import time
 import os
 import io
 
-from test_of_rep import current_domain
-
 TOKEN = '7923293677:AAH9l0wC1StMncKbrY1yuVpgP65JR80LWVw'  # Замените на ваш токен
 bot = telebot.TeleBot(TOKEN)
 
