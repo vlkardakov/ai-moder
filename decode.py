@@ -24,11 +24,16 @@ def final_from_url(latest):
 
     return latest
 
+def decode(url):
+    return unquote(unquote(unquote(url)))
+
 def redirects(url):
     try:
+        url = decode(url)
         response = urlopen(url)
         final_url = response.geturl()
-        return final_url
+        print("URL Получен!")
+        return decode(final_url)
     except HTTPError as e:
         # Обработка HTTP ошибок (например, 404, 500)
         print(f"HTTP Error: {e.code} for URL: {url}")
@@ -44,8 +49,7 @@ def redirects(url):
     except:
         return url
 
-def decode(url):
-    return unquote(unquote(unquote(url)))
+
 
 def decode_url(link):
     #suffixes = ("http://","https://","www.","http%3A%2F%2F", "")
