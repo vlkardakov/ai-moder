@@ -4,6 +4,8 @@ import time
 import os
 import io
 
+from test_of_rep import current_domain
+
 TOKEN = '7923293677:AAH9l0wC1StMncKbrY1yuVpgP65JR80LWVw'  # Замените на ваш токен
 bot = telebot.TeleBot(TOKEN)
 
@@ -24,6 +26,7 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from get_domain import get_domain
 from save import save
+from decode import decode_url
 
 print("imported")
 
@@ -120,6 +123,16 @@ def translate(text):
 def start_message(message):
     bot.reply_to(message, "Отправьте таблицу CSV!")
 
+from datetime import datetime
+
+def get_tag():
+  """
+  Возвращает текущее время в виде строки: последние 2 цифры года-месяц-число-час.
+  """
+  now = datetime.now()
+  formatted = now.strftime("%y-%m-%d-%H")
+  return formatted
+
 def send(text):
     subprocess.run(["press.exe", text])
 
@@ -163,10 +176,21 @@ def handle_document(message):
                     # Очищаем от мусора
                     checked_domains = load_checked()
                     verified_domains = load_verified()
+                    err_tag = get_tag()
                     clean()
                     scams = []
 
                     urls = read()
+                    new_urls = []
+
+                    for url in urls:
+                        url = decode_url(url)
+                        current_domain = get_domain(url)
+                        if not (current_domain in checked_domains):
+                            checked_domains.append(current_domain)
+                            new_urls.append(url)
+
+                    urls = new_urls
 
                     bot.reply_to(message, f"Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(len(urls) * 7))}")
 
@@ -180,17 +204,19 @@ def handle_document(message):
 
 
 
+
+
                         for i in range(len(urls) - 1):
                             if stop_processing:
                                 break
 
                             try:
-                                url = urls[i]
-                                current_domain = get_domain(url)
-                                # current_final_domain = get_domain(str(asyncio.run(get_final_url(url))))
-                                if not (current_domain in checked_domains):  # and not (current_final_domain in checked_domains):
-                                    print("OK")
-                                    checked_domains.append(current_domain)
+                                    url = decode_url(urls[i])
+                                    current_domain = get_domain(url)
+                                    # current_final_domain = get_domain(str(asyncio.run(get_final_url(url))))
+                                    # and not (current_final_domain in checked_domains):
+                                    #print("OK")
+                                    #checked_domains.append(current_domain)
                                     print(f"URL сокращения: {current_domain}")
                                     # if current_final_domain:
                                     # print(f"URL финальный: {current_final_domain}")
@@ -257,8 +283,6 @@ def handle_document(message):
 
                                         os.remove("tempimg.png")  # Удаляем изображение
 
-                                else:
-                                    print("PASS")
                             except Exception as e:
                                 print(f"Ошибка внутри цикла: {e}")
                                 save(f"ОТЧЁТ", scams)
@@ -266,7 +290,13 @@ def handle_document(message):
                                 save_verified(verified_domains)
                                 err_count -= 1
                                 print(f"ПРОИЗОШЛА ОШИБКА, РАБОТА СОХРАНЕНА. ЧТОБЫ СЛОМАТЬ, ЕЩЁ {err_count} ОШИБОК")
-                                bot.reply_to(message, f"Ошибка!!! Еще обработок - {err_count}")
+                                with open("tempimg.png", "rb") as img_file:
+                                    try:
+                                        bot.send_photo(message.chat.id, img_file,
+                                                       caption=f"""{url} - {title}\n\nНе удалось обработать! \n#{err_tag}""")
+                                        os.remove("tempimg.png")
+                                    except:
+                                        pass
                                 if err_count < 1:
                                     exit()
 
