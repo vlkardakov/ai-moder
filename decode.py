@@ -36,10 +36,12 @@ def redirects(url):
     except URLError as e:
         # Обработка ошибок URL (например, неправильный формат URL)
         print(f"URL Error: {e.reason} for URL: {url}")
-        return None
+        return url
     except Exception as e:
         # Обработка других возможных ошибок
         print(f"An unexpected error occurred: {e}")
+        return url
+    except:
         return url
 
 def decode(url):
