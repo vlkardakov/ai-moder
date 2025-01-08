@@ -182,11 +182,14 @@ def handle_document(message):
                     new_urls = []
 
                     for url in urls:
-                        url = decode_url(url)
-                        current_domain = get_domain(url)
-                        if not (current_domain in checked_domains):
-                            checked_domains.append(current_domain)
-                            new_urls.append(url)
+                        try:
+                            url = decode_url(url)
+                            current_domain = get_domain(url)
+                            if not (current_domain in checked_domains):
+                                checked_domains.append(current_domain)
+                                new_urls.append(url)
+                        except:
+                            input("ПРОИЗОШЛА ОШИБКА!!!!!!! НАЖМИТЕ ENTER!!!! НАЖАТЬ ENTER::")
 
                     urls = new_urls
 

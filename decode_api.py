@@ -52,7 +52,6 @@ def decode_url(link):
     latest = final_from_url(latest)
     return latest
 
-
 app = Flask(__name__)
 
 @app.route("/", methods=["POST"])
