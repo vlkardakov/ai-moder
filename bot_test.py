@@ -296,38 +296,30 @@ def handle_document(message):
                                             os.remove("tempimg.png")
                                         except:
                                             pass
-                                if err_count < 1:
-                                    exit()
 
+                        print("РАБОТА ОКОНЧЕНА, СОХРАНЕНИЕ")
+                        save(f"ОТЧЁТ", scams)
+                        save_checked(checked_domains)
+                        save_verified(verified_domains)
+                        print("ОТКЛЮЧЕНИЕ")
+
+                        time.sleep(4)
+                        if os.path.exists('ОТЧЁТ.csv'):
+                            with open('ОТЧЁТ.csv', 'rb') as report:
+                                bot.send_document(message.chat.id, report, caption=f"Запрос занял {time.time() - time1} секунд")
+                                time.sleep(20)
+                                os.remove("ОТЧЁТ.csv")
+                                bot.reply_to(message,
+                                             f"Готов!")
+                                #stop_processing = False
+                        else:
+                            bot.reply_to(message, f"Мошеннических сайтов не обнаружено. Запрос занял {time.time() - time1} секунд")
 
                     #except Exception as e:
-                        #print(f"Ошибка в основной части: {e}")
-                        #pass
-                    # now = datetime.datetime.now()
-                    # formatted_datetime = now.strftime("%d.%m.%Y %H:%M")
-                    print("РАБОТА ОКОНЧЕНА, СОХРАНЕНИЕ")
-                    save(f"ОТЧЁТ", scams)
-                    save_checked(checked_domains)
-                    save_verified(verified_domains)
-                    print("ОТКЛЮЧЕНИЕ")
-
-                    time.sleep(4)
-                    if os.path.exists('ОТЧЁТ.csv'):
-                        with open('ОТЧЁТ.csv', 'rb') as report:
-                            bot.send_document(message.chat.id, report, caption=f"Запрос занял {time.time() - time1} секунд")
-                            time.sleep(20)
-                            os.remove("ОТЧЁТ.csv")
-                            bot.reply_to(message,
-                                         f"Готов!")
-                            #stop_processing = False
-                    else:
-                        bot.reply_to(message, f"Мошеннических сайтов не обнаружено. Запрос занял {time.time() - time1} секунд")
-
-                #except Exception as e:
-                    #bot.reply_to(message, f"Произошла ошибка во время обработки: {e}")
-            else:
-                bot.reply_to(message, "Обработка отменена.")
-
+                        #bot.reply_to(message, f"Произошла ошибка во время обработки: {e}")
+                else:
+                    bot.reply_to(message, "Обработка отменена.")
+    
     else:
         bot.reply_to(message, "Пожалуйста, отправьте файл .csv")
 
