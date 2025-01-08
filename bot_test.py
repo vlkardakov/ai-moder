@@ -169,27 +169,39 @@ def handle_document(message):
                     bot.reply_to(message, f"Обработка начата... ")
                 #try:
                     time1 = time.time()
-                    from main import test
+                    bot.reply_to(message, f"Время задано")
 
                     # Очищаем от мусора
                     checked_domains = load_checked()
                     verified_domains = load_verified()
+                    bot.reply_to(message, f"Домены загружены")
                     err_tag = get_tag()
+                    bot.reply_to(message, f"Тэг получен")
                     clean()
+                    bot.reply_to(message, f"таблицы очищена")
                     scams = []
 
                     urls = read()
+                    bot.reply_to(message, f"Таблица прочитана")
                     new_urls = []
 
                     for url in urls:
                         try:
                             url = decode_url(url)
+                            bot.reply_to(message, f"url декодирован")
                             current_domain = get_domain(url)
+                            bot.reply_to(message, f"домен получен")
                             if not (current_domain in checked_domains):
+
                                 checked_domains.append(current_domain)
                                 new_urls.append(url)
+                                bot.reply_to(message, f"Домен уникальный и добавлен")
+                            else:
+                                bot.reply_to(message, f"Домен не уникален")
+
                         except:
                             input("ПРОИЗОШЛА ОШИБКА!!!!!!! НАЖМИТЕ ENTER!!!! НАЖАТЬ ENTER::")
+                            bot.reply_to(message, f"ОШИБКА!!!!!! ОШИИИБКААААА!!!!")
 
                     urls = new_urls
 

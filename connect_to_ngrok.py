@@ -1,8 +1,9 @@
 import requests
+from random import randint
 
-url = "http://83.143.112.43:4444"
 
 def decode(text):
+    url = f"http://83.143.112.43:444{randint(0,9)}"
     data = {'url': text}
     try:
         response = requests.post(url, data=data)

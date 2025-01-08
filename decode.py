@@ -30,7 +30,7 @@ def redirects(url):
         url = decode(url)
         response = urlopen(url)
         final_url = response.geturl()
-        print("URL Получен!")
+        #print("URL Получен!")
         return decode(final_url)
     except HTTPError as e:
         # Обработка HTTP ошибок (например, 404, 500)
@@ -50,20 +50,17 @@ def redirects(url):
 
 
 def decode_url(link):
-    #suffixes = ("http://","https://","www.","http%3A%2F%2F", "")
     url = decode(link)
 
-    latest = final_from_url(url) #final_from_redirect(final_from_url(final_from_redirect(final_from_url(url))))
+    latest = final_from_url(url)
     latest = redirects(latest)
     latest = final_from_url(latest)
 
-    return latest
-    #for suffixe in suffixes:
-        #latest = latest.replace(suffixe, "")
-
-    #print(f"\nФинальная ссылка: {latest}")
+    if latest != url:
+        return latest
+    else:
+        return ""
 
 if __name__ == "__main__":
     url = input("URL = ")
-
     print(f"\nURL: {decode_url(url)}")
