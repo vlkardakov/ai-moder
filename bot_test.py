@@ -190,7 +190,7 @@ def handle_document(message):
 
                     urls = new_urls
 
-                    bot.reply_to(message, f"Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(len(urls) * 7))}")
+                    bot.reply_to(message, f"Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(len(urls) * 10))}")
 
 
                     if True:
@@ -273,16 +273,26 @@ def handle_document(message):
                                         scams.append(
                                             {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
                                              "domain": current_domain, "title": title})
-
-                                        with open("tempimg.png", "rb") as img_file:
+                                        try:
+                                            with open("tempimg.png", "rb") as img_file:
+                                                bot.send_photo(message.chat.id, img_file, caption=f"""{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode('utf-8'))
+                                        except:
                                             try:
-                                                bot.send_photo(message.chat.id, img_file, caption=f"""{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 7)))}""".encode('utf-8'))
+                                                bot.reply_to(message,
+                                                             f"ПРОВЕРЬТЕ URL\n{url} - {title}")
+
                                             except:
-                                                pass
+                                                try:
+                                                    bot.reply_to(message,
+                                                                 f"ПРОВЕРЬТЕ URL\n{url} Без TITLE")
+                                                except:
+                                                    pass
 
 
-                                        os.remove("tempimg.png")  # Удаляем изображение
-
+                                        try:
+                                            os.remove("tempimg.png")  # Удаляем изображение
+                                        except:
+                                            pass
                             except Exception as e:
                                 print(f"Ошибка внутри цикла: {e}")
                                 save(f"ОТЧЁТ", scams)
