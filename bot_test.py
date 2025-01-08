@@ -187,13 +187,14 @@ def handle_document(message):
 
                     for url in urls:
                         try:
+                            long_domain = get_domain(url)
                             url = decode_url(url)
                             bot.reply_to(message, f"url декодирован")
                             current_domain = get_domain(url)
                             bot.reply_to(message, f"домен получен")
-                            if not (current_domain in checked_domains):
-
+                            if not (current_domain in checked_domains) and not (long_domain in checked_domains):
                                 checked_domains.append(current_domain)
+                                checked_domains.append(long_domain)
                                 new_urls.append(url)
                                 bot.reply_to(message, f"Домен уникальный и добавлен")
                             else:
