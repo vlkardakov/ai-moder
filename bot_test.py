@@ -163,79 +163,46 @@ def handle_document(message):
         # Начинаем ожидание ответа пользователя
         @bot.message_handler(func=lambda message: message.text.lower() in ['да', 'нет'])
         def handle_processing_decision(message):
-            global stop_processing
-            if message.text.lower() == 'да':
-                    #bot.reply_to(message, f"Обработка начата... Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(num_rows*7))}")
-                    bot.reply_to(message, f"Обработка начата... ")
-                #try:
-                    time1 = time.time()
-                    bot.reply_to(message, f"Время задано")
+                global stop_processing
+                if message.text.lower() == 'да':
+                        #bot.reply_to(message, f"Обработка начата... Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(num_rows*7))}")
+                        bot.reply_to(message, f"Обработка начата... ")
 
-                    # Очищаем от мусора
-                    checked_domains = load_checked()
-                    verified_domains = load_verified()
-                    bot.reply_to(message, f"Домены загружены")
-                    err_tag = get_tag()
-                    bot.reply_to(message, f"Тэг получен")
-                    clean()
-                    bot.reply_to(message, f"таблицы очищена")
-                    scams = []
+                        time1 = time.time()
+                        bot.reply_to(message, f"Время задано")
 
-                    urls = read()
-                    bot.reply_to(message, f"Таблица прочитана")
-                    new_urls = []
+                        # Очищаем от мусора
+                        checked_domains = np.array([], dtype=str)
+                        loaded_checked = load_checked()
+                        for el in loaded_checked:
+                            checked_domains = np.append(checked_domains, el)
+                        loaded_checked = None
+                        verified_domains = load_verified()
+                        bot.reply_to(message, f"Домены загружены")
+                        err_tag = get_tag()
+                        bot.reply_to(message, f"Тэг получен")
+                        clean()
+                        bot.reply_to(message, f"таблицы очищена")
+                        scams = []
 
-                    for url in urls:
-                        try:
-                            long_domain = get_domain(url)
-                            url = decode_url(url)
-                            bot.reply_to(message, f"url декодирован")
-                            current_domain = get_domain(url)
-                            bot.reply_to(message, f"домен получен")
-                            if not (current_domain in checked_domains) and not (long_domain in checked_domains):
-                                checked_domains.append(current_domain)
-                                checked_domains.append(long_domain)
-                                new_urls.append(url)
-                                bot.reply_to(message, f"Домен уникальный и добавлен")
-                            else:
-                                bot.reply_to(message, f"Домен не уникален")
-
-                        except:
-                            input("ПРОИЗОШЛА ОШИБКА!!!!!!! НАЖМИТЕ ENTER!!!! НАЖАТЬ ENTER::")
-                            bot.reply_to(message, f"ОШИБКА!!!!!! ОШИИИБКААААА!!!!")
-
-                    urls = new_urls
-
-                    bot.reply_to(message, f"Я пришлю таблицу меньше чем через {time.strftime('%H:%M:%S', time.gmtime(len(urls) * 10))}")
-
-
-                    if True:
-                    #try:
-                        # if True:
-                        go_to(urls[0])
-                        time.sleep(5)
-                        err_count = 60
-
-
-
-
+                        urls = read()
+                        bot.reply_to(message, f"Таблица прочитана")
 
                         for i in range(len(urls) - 1):
                             if stop_processing:
                                 break
 
                             try:
-                                    url = decode_url(urls[i])
-                                    current_domain = get_domain(url)
-                                    # current_final_domain = get_domain(str(asyncio.run(get_final_url(url))))
-                                    # and not (current_final_domain in checked_domains):
-                                    #print("OK")
-                                    #checked_domains.append(current_domain)
-                                    print(f"URL сокращения: {current_domain}")
-                                    # if current_final_domain:
-                                    # print(f"URL финальный: {current_final_domain}")
-                                    # checked_domains.append(current_final_domain)
+                                url = urls[i]
+                                long_url = url
+                                long_domain = get_domain(url)
 
+                                url = decode_url(url)
+                                short_domain = get_domain(url)
+                                print(f"URL сокращения: {short_domain}")
+                                if not (long_domain in checked_domains) and not (short_domain in checked_domains):
+                                    checked_domains = np.append(checked_domains, long_domain)
+                                    checked_domains = np.append(checked_domains, short_domain)
                                     title = asyncio.run(get_page_titles([url]))[0]
                                     print(f"{title=}")
 
@@ -267,7 +234,7 @@ def handle_document(message):
                                     В ответе выдай (разделительные символы между ЧАСТЯМИ - "::": рассуждения::тип::оценка опасности сайта от 0 до 10 1, целым числом
                                     Пример ответа, кавычки не считаются, "Сайт выглядит как легитимный адрес поисковой системы Google.  Нет никаких подозрительных поддоменов или странных символов в адресе.  Сам сайт отображает стандартную страницу поиска Google, без каких-либо признаков мошенничества, таких как всплывающие окна, подозрительные запросы на оплату или ссылки на азартные игры.  На сайте отсутствует контент 18 ::хороший :: 0"
                                     
-                                    url и title сайта для проверки, структура url - title: {url} - {title}
+                                    url и title сайта для проверки, структура url - title: {long_url} ({url}) - {title}
                                     """
 
                                     print("describing")
@@ -282,25 +249,26 @@ def handle_document(message):
                                     if "хороший" in result[1]:
                                         pass
                                     elif "легитимный" in result[1]:
-                                        verified_domains.append(current_domain)
+                                        pass
+                                        #verified_domains.append(current_domain)
                                     elif result[1] in ("хороший",'легитимный','новости','сократитель ссылок','форум'):
                                         pass
                                     else:
                                         scams.append(
                                             {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
-                                             "domain": current_domain, "title": title})
+                                             "long_domain": long_domain,"short_domain":short_domain, "title": title})
                                         try:
                                             with open("tempimg.png", "rb") as img_file:
-                                                bot.send_photo(message.chat.id, img_file, caption=f"""{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode('utf-8'))
+                                                bot.send_photo(message.chat.id, img_file, caption=f"""URL: {long_url} ({url})\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode('utf-8'))
                                         except:
                                             try:
                                                 bot.reply_to(message,
-                                                             f"ПРОВЕРЬТЕ URL\n{url} - {title}")
+                                                             f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - {title}")
 
                                             except:
                                                 try:
                                                     bot.reply_to(message,
-                                                                 f"ПРОВЕРЬТЕ URL\n{url} Без TITLE")
+                                                                 f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - Без TITLE")
                                                 except:
                                                     pass
 
@@ -314,8 +282,8 @@ def handle_document(message):
                                 save(f"ОТЧЁТ", scams)
                                 save_checked(checked_domains)
                                 save_verified(verified_domains)
-                                err_count -= 1
-                                print(f"ПРОИЗОШЛА ОШИБКА, РАБОТА СОХРАНЕНА. ЧТОБЫ СЛОМАТЬ, ЕЩЁ {err_count} ОШИБОК")
+                                #err_count -= 1
+                                #print(f"ПРОИЗОШЛА ОШИБКА, РАБОТА СОХРАНЕНА. ЧТОБЫ СЛОМАТЬ, ЕЩЁ {err_count} ОШИБОК")
                                 with open("tempimg.png", "rb") as img_file:
                                     try:
                                         bot.send_photo(message.chat.id, img_file,

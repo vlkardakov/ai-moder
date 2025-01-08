@@ -1,12 +1,16 @@
-from get_domain import get_domain
+import numpy as np
 
-checked_domains = []
+checked_domains = np.array([], dtype=str)
 
 while True:
-    current_domain = get_domain(input())
-    if not current_domain in checked_domains:
-        print("OK")
-        checked_domains.append(current_domain)
+    line = input("Введите строку (или 'exit' для завершения): ")
+    if line == 'exit':
+        break
+
+    if line not in checked_domains:
+        checked_domains = np.append(checked_domains, line)
+        print("YES")
     else:
         print("PASS")
 
+print("Проверенные строки:", checked_domains)
