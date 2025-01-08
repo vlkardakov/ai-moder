@@ -4,6 +4,19 @@ from urllib.request import urlopen
 from urllib.parse import urljoin
 from urllib.error import HTTPError, URLError
 
+def load_params():
+    with open("params.txt", "r") as f:
+        return pithon(f"result = {f.read()}")
+
+def pithon(code):
+    global result
+    try:
+        local_vars = {}
+        exec(code, {}, local_vars)  # Используем локальный словарь для хранения переменных
+        return local_vars.get('result')  # Возвращаем значение переменной result
+    except Exception as e:
+        return e
+
 
 def final_from_url(latest):
     params = ["redirect",'redir','r',
@@ -52,14 +65,15 @@ def redirects(url):
 def decode_url(link):
     url = decode(link)
 
-    latest = final_from_url(url)
+    latest = final_from_url(url) #final_from_redirect(final_from_url(final_from_redirect(final_from_url(url))))
     latest = redirects(latest)
     latest = final_from_url(latest)
-
     if latest != url:
+        print(f"редирект для {url}: {latest}")
         return latest
     else:
-        return ""
+        print(f"редирект для {url}: нету редиректа")
+        return "noredir"
 
 if __name__ == "__main__":
     url = input("URL = ")

@@ -323,33 +323,4 @@ def handle_document(message):
     else:
         bot.reply_to(message, "Пожалуйста, отправьте файл .csv")
 
-@bot.message_reaction()
-def handle_reaction(message_reaction):
-    """Обработчик реакций на сообщения с редактированием."""
-    if message_reaction.reaction:
-        for reaction in message_reaction.reaction:
-            emoji = reaction.emoji
-            message_id = message_reaction.message_id
-            chat_id = message_reaction.chat.id
-
-            reaction_text = "поставлена реакция"
-
-            try:
-                # Получаем сообщение
-                message = bot.get_messages(chat_id, message_id)[0]
-                original_text = message.text
-
-                # Проверяем, не было ли уже добавлено сообщение о реакции
-                if reaction_text not in original_text:
-                    new_text = f"{original_text} ({reaction_text}: {emoji})"
-                    bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=new_text)
-                    print(f"Сообщение {message_id} отредактировано в чате {chat_id}, добавлена реакция {emoji}")
-                else:
-                    print(f"Реакция {emoji} уже учтена в сообщении {message_id}")
-
-            except telebot.apihelper.ApiTelegramException as e:
-                print(f"Ошибка редактирования сообщения {message_id}: {e}")
-            except Exception as e:
-                print(f"Ошибка при получении сообщения: {e}")
-
 bot.polling()

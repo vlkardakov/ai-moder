@@ -50,7 +50,12 @@ def decode_url(link):
     latest = final_from_url(url) #final_from_redirect(final_from_url(final_from_redirect(final_from_url(url))))
     latest = redirects(latest)
     latest = final_from_url(latest)
-    return latest
+    if latest != url:
+        print(f"редирект для {url}: {latest}")
+        return latest
+    else:
+        print(f"редирект для {url}: нету редиректа")
+        return "noredir"
 
 app = Flask(__name__)
 
@@ -61,4 +66,4 @@ def givedata():
 
 if __name__ == '__main__':
     print("СЕРВЕР НАЧАЛСЯ")
-    app.run(debug=True, host='0.0.0.0', port=4444)
+    app.run(debug=True, host='0.0.0.0', port=4440)
