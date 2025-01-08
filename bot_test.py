@@ -153,7 +153,6 @@ def handle_document(message):
     if message.document.mime_type == 'text/csv':
         file_info = bot.get_file(message.document.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        #num_rows = len(pd.read_csv(io.StringIO(downloaded_file.decode('utf-8'))))
         with open('1.csv', 'wb') as new_file:
             new_file.write(downloaded_file)
 
