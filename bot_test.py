@@ -133,6 +133,10 @@ def send(text):
 
 stop_processing = False
 
+
+def split_array(arr, chunk_size=10):
+    return np.array_split(arr, np.ceil(len(arr) / chunk_size))
+
 @bot.message_handler(commands=['stop'])
 def stop_processing_command(message):
     global stop_processing
@@ -180,8 +184,25 @@ def handle_document(message):
                         clean()
                         #bot.reply_to(message, f"таблицы очищена")
                         scams = []
+                        urls_massives = split_array(read())
 
-                        urls = read()
+                        new_urls = []
+
+                        total_titles = []
+
+                        for urls_massive in urls_massives:
+                            titles = get_page_titles(urls_massive)
+                            total_titles += titles
+                        for url in urls:
+                                long_domain0 = get_domain(url)
+                                short_domain0 = get_domain(describe_url(url))
+
+                                if not long_domain0 in checked_domains:
+                                    checked_domains = np.append(checked_domains, long_domain0)
+                                if not short_domain0 in checked_domains:
+                                    checked_domains = np.append(checked_domains, short_domain0)
+                        urls = new_urls
+
                         bot.reply_to(message, f"Таблица прочитана")
 
                         for i in range(len(urls) - 1):
@@ -199,86 +220,84 @@ def handle_document(message):
                                 print(f"URL сокращения: {short_domain}")
 
                                 print(f"\nВремени на обработку доменов: {time.time() - time_start_domains}")
+                                time_start_generation = time.time()
+                                checked_domains = np.append(checked_domains, long_domain)
+                                checked_domains = np.append(checked_domains, short_domain)
+                                title = asyncio.run(get_page_titles([url]))[0]
+                                print(f"{title=}")
 
-                                if not (long_domain in checked_domains) and not (short_domain in checked_domains):
-                                    time_start_generation = time.time()
-                                    checked_domains = np.append(checked_domains, long_domain)
-                                    checked_domains = np.append(checked_domains, short_domain)
-                                    title = asyncio.run(get_page_titles([url]))[0]
-                                    print(f"{title=}")
+                                time.sleep(3)
 
-                                    time.sleep(3)
+                                img = create_screenshot()
+                                img.save("tempimg.png")  # Сохраняем скриншот
 
-                                    img = create_screenshot()
-                                    img.save("tempimg.png")  # Сохраняем скриншот
+                                time.sleep(0.1)
+                                send("{Ctrl down}{w}{Ctrl up}")
+                                go_to(describe_url(urls[i + 1]))
+                                print("translating")
+                                try:
+                                    title = translate(title)
+                                except:
+                                    pass
 
-                                    time.sleep(0.1)
-                                    send("{Ctrl down}{w}{Ctrl up}")
-                                    go_to(urls[i + 1])
-                                    print("translating")
-                                    try:
-                                        title = translate(title)
-                                    except:
-                                        pass
-
-                                    prompt = \
+                                prompt = \
                                     fr"""
-                                    Ты должен описать, что ты видишь, и считаешь ли, что сайт - мошеннический. Не более 2000 символов!!!
-                                    
-                                    
-                                    Признаки мошеннических сайтов: говорят, что покупатель оплатил товар и просят получить деньги, всякие казино, другие розыгрыши, закос под службы доставки или интернет-магазины. 
-                                    Уделя внимание Самому URL адресу, например amazon.s4674.world может выглядеть как сайт amazon, но быть мошенническим.
-                                    Так же определяй, что сайт содержит 18+ контент, или например являются сервисами сокращения ссылок (мошенничество и так далее.
+                                                                    Ты должен описать, что ты видишь, и считаешь ли, что сайт - мошеннический. Не более 2000 символов!!!
 
-                                    типы сайтов: хороший, новости, форум, сократители ссылок, легитимный, (означает, что принадлежит известной компании), мошенничество, казино, 18+
-                                    
-                                    В ответе выдай (разделительные символы между ЧАСТЯМИ - "::": рассуждения::тип::оценка опасности сайта от 0 до 10 1, целым числом
-                                    Пример ответа, кавычки не считаются, "Сайт выглядит как легитимный адрес поисковой системы Google.  Нет никаких подозрительных поддоменов или странных символов в адресе.  Сам сайт отображает стандартную страницу поиска Google, без каких-либо признаков мошенничества, таких как всплывающие окна, подозрительные запросы на оплату или ссылки на азартные игры.  На сайте отсутствует контент 18 ::хороший :: 0"
-                                    
-                                    url и title сайта для проверки, структура url - title: {long_url} ({url}) - {title}
-                                    """
 
-                                    print("describing")
-                                    result = describe(prompt, img).split("::")  # Используем tempimg.png
+                                                                    Признаки мошеннических сайтов: говорят, что покупатель оплатил товар и просят получить деньги, всякие казино, другие розыгрыши, закос под службы доставки или интернет-магазины. 
+                                                                    Уделя внимание Самому URL адресу, например amazon.s4674.world может выглядеть как сайт amazon, но быть мошенническим.
+                                                                    Так же определяй, что сайт содержит 18+ контент, или например являются сервисами сокращения ссылок (мошенничество и так далее.
 
-                                    print(f"{result=}")
+                                                                    типы сайтов: хороший, новости, форум, сократители ссылок, легитимный, (означает, что принадлежит известной компании), мошенничество, казино, 18+
 
-                                    print(f"{result[-3]}")
-                                    print(f"Тип        : {result[-2]}")
-                                    print(f"Опасность  : {result[-1]}")
-                                    print(f"Времени на генерацию: {time.time() - time_start_generation}")
-                                    if "хороший" in result[1]:
-                                        pass
-                                    elif "легитимный" in result[1]:
-                                        pass
-                                        #verified_domains.append(current_domain)
-                                    elif result[1] in ("хороший",'легитимный','новости','сократитель ссылок','форум'):
-                                        pass
-                                    else:
-                                        scams.append(
-                                            {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
-                                             "long_domain": long_domain,"short_domain":short_domain, "title": title})
+                                                                    В ответе выдай (разделительные символы между ЧАСТЯМИ - "::": рассуждения::тип::оценка опасности сайта от 0 до 10 1, целым числом
+                                                                    Пример ответа, кавычки не считаются, "Сайт выглядит как легитимный адрес поисковой системы Google.  Нет никаких подозрительных поддоменов или странных символов в адресе.  Сам сайт отображает стандартную страницу поиска Google, без каких-либо признаков мошенничества, таких как всплывающие окна, подозрительные запросы на оплату или ссылки на азартные игры.  На сайте отсутствует контент 18 ::хороший :: 0"
+
+                                                                    url и title сайта для проверки, структура url - title: {long_url} ({url}) - {title}
+                                                                    """
+                                print("describing")
+                                result = describe(prompt, img).split("::")  # Используем tempimg.png
+
+                                print(f"{result=}")
+
+                                print(f"{result[-3]}")
+                                print(f"Тип        : {result[-2]}")
+                                print(f"Опасность  : {result[-1]}")
+                                print(f"Времени на генерацию: {time.time() - time_start_generation}")
+                                if "хороший" in result[1]:
+                                    pass
+                                elif "легитимный" in result[1]:
+                                    pass
+                                    # verified_domains.append(current_domain)
+                                elif result[1] in ("хороший", 'легитимный', 'новости', 'сократитель ссылок', 'форум'):
+                                    pass
+                                else:
+                                    scams.append(
+                                        {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
+                                         "long_domain": long_domain, "short_domain": short_domain, "title": title})
+                                    try:
+                                        with open("tempimg.png", "rb") as img_file:
+                                            bot.send_photo(message.chat.id, img_file,
+                                                           caption=f"""URL: {long_url} ({url})\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode(
+                                                               'utf-8'))
+                                    except:
                                         try:
-                                            with open("tempimg.png", "rb") as img_file:
-                                                bot.send_photo(message.chat.id, img_file, caption=f"""URL: {long_url} ({url})\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode('utf-8'))
+                                            bot.reply_to(message,
+                                                         f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - {title}")
+
                                         except:
                                             try:
                                                 bot.reply_to(message,
-                                                             f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - {title}")
-
+                                                             f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - Без TITLE")
                                             except:
-                                                try:
-                                                    bot.reply_to(message,
-                                                                 f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - Без TITLE")
-                                                except:
-                                                    pass
+                                                pass
 
-
-                                        try:
-                                            os.remove("tempimg.png")  # Удаляем изображение
-                                        except:
-                                            pass
-                                    print(f"Времени на всё: {time.time() - time_start_domains}")
+                                    try:
+                                        os.remove("tempimg.png")  # Удаляем изображение
+                                    except:
+                                        pass
+                                print(f"Времени на всё: {time.time() - time_start_domains}")
                             except Exception as e:
                                 print(f"Ошибка внутри цикла: {e}")
                                 save(f"ОТЧЁТ", scams)
