@@ -1,5 +1,3 @@
-from flask import Flask, request, jsonify, Response
-import requests
 from urllib.parse import urlparse, parse_qs, unquote, urljoin
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
@@ -25,9 +23,9 @@ async def get_page_headers(session, url):
             h2_tags = [tag.string.strip() for tag in soup.find_all('h2') if tag.string]
             h3_tags = [tag.string.strip() for tag in soup.find_all('h3') if tag.string]
 
-            pre_compare = f"{title=} {h1_tags=} {h2_tags=} {h3_tags=}".replace("[", "").replace("]", "")
+            pre_compare = f"{title}; {h1_tags}; {h2_tags}; {h3_tags};".replace("[", "").replace("]", "")
 
-            return
+            return pre_compare
     except aiohttp.ClientError as e:
         # print(f"({url}): {e}")
         return None, [], [], []
@@ -101,23 +99,10 @@ def redirects(url):
 
 
 def describe_url(link):
-    url = decode(link).strip("/")
+    url2 = decode(link).strip("/")
+    url = url2
 
     url = final_from_url(url)
     url = redirects(url)
     url = final_from_url(url)
-
-    if url == link:
-        url = ""
-
-    pre_title = get_title(url)
-
-    title = gemini(
-        f"Проанализируй Title и h-теги страницы в интренете и сочини хорошее название для seo-продвижения этой страницы на том же языке или смеси языков, на котором написаны title и теги.\nТеги:{pre_title}")
-
-    print(f"для {url}: {latest}")
-    return url, title
-
-
-def main(url):
-    return describe_url(url)
+    return url

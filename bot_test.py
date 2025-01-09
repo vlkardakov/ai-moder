@@ -24,7 +24,7 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from get_domain import get_domain
 from save import save
-from decode import decode_url
+from decode import describe_url
 
 print("imported")
 
@@ -194,7 +194,7 @@ def handle_document(message):
                                 long_url = url
                                 long_domain = get_domain(url)
 
-                                url = decode_url(url)
+                                url = describe_url(url)
                                 short_domain = get_domain(url)
                                 print(f"URL сокращения: {short_domain}")
 
