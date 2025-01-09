@@ -124,9 +124,6 @@ def start_message(message):
 from datetime import datetime
 
 def get_tag():
-  """
-  Возвращает текущее время в виде строки: последние 2 цифры года-месяц-число-час.
-  """
   now = datetime.now()
   formatted = now.strftime("%y-%m-%d-%H")
   return formatted
@@ -168,7 +165,7 @@ def handle_document(message):
                         bot.reply_to(message, f"Обработка начата... ")
 
                         time1 = time.time()
-                        bot.reply_to(message, f"Время задано")
+                        #bot.reply_to(message, f"Время задано")
 
                         # Очищаем от мусора
                         checked_domains = np.array([], dtype=str)
@@ -177,11 +174,11 @@ def handle_document(message):
                             checked_domains = np.append(checked_domains, el)
                         loaded_checked = None
                         verified_domains = load_verified()
-                        bot.reply_to(message, f"Домены загружены")
+                        #bot.reply_to(message, f"Домены загружены")
                         err_tag = get_tag()
-                        bot.reply_to(message, f"Тэг получен")
+                        #bot.reply_to(message, f"Тэг получен")
                         clean()
-                        bot.reply_to(message, f"таблицы очищена")
+                        #bot.reply_to(message, f"таблицы очищена")
                         scams = []
 
                         urls = read()
@@ -192,6 +189,7 @@ def handle_document(message):
                                 break
 
                             try:
+                                time_start_domains = time.time()
                                 url = urls[i]
                                 long_url = url
                                 long_domain = get_domain(url)
@@ -199,7 +197,11 @@ def handle_document(message):
                                 url = decode_url(url)
                                 short_domain = get_domain(url)
                                 print(f"URL сокращения: {short_domain}")
+
+                                print(f"\nВремени на обработку доменов: {time.time() - time_start_domains}")
+
                                 if not (long_domain in checked_domains) and not (short_domain in checked_domains):
+                                    time_start_generation = time.time()
                                     checked_domains = np.append(checked_domains, long_domain)
                                     checked_domains = np.append(checked_domains, short_domain)
                                     title = asyncio.run(get_page_titles([url]))[0]
@@ -244,7 +246,7 @@ def handle_document(message):
                                     print(f"{result[-3]}")
                                     print(f"Тип        : {result[-2]}")
                                     print(f"Опасность  : {result[-1]}")
-
+                                    print(f"Времени на генерацию: {time.time() - time_start_generation}")
                                     if "хороший" in result[1]:
                                         pass
                                     elif "легитимный" in result[1]:
@@ -276,6 +278,7 @@ def handle_document(message):
                                             os.remove("tempimg.png")  # Удаляем изображение
                                         except:
                                             pass
+                                    print(f"Времени на всё: {time.time() - time_start_domains}")
                             except Exception as e:
                                 print(f"Ошибка внутри цикла: {e}")
                                 save(f"ОТЧЁТ", scams)

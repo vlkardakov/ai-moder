@@ -31,26 +31,37 @@ async def get_final_url(url): # Замените на ваш URL
     if final_url:
         return final_url
 
-async def get_page_title(session, url):
+async def get_page_headers(session, url):
     try:
         async with session.get(url) as response:
             response.raise_for_status()
             html = await response.text()
             soup = BeautifulSoup(html, 'html.parser')
-            title = soup.title.string if soup.title else None
-            return title.strip() if title else None
+
+            title_tag = soup.title
+            title = title_tag.string.strip() if title_tag and title_tag.string else None
+
+            h1_tags = [tag.string.strip() for tag in soup.find_all('h1') if tag.string]
+            h2_tags = [tag.string.strip() for tag in soup.find_all('h2') if tag.string]
+            h3_tags = [tag.string.strip() for tag in soup.find_all('h3') if tag.string]
+
+            pre_compare = f"{title=} {h1_tags=} {h2_tags=} {h3_tags=}".replace("[","").replace("]","")
+
+
+
+            return
     except aiohttp.ClientError as e:
         #print(f"Ошибка при запросе ({url}): {e}")
-        return None
+        return None, [], [], []
     except AttributeError:
         #print(f"Заголовок не найден на странице ({url}).")
-        return None
+        return None, [], [], []
 
-async def get_page_titles(urls):
+async def get_page_titles(url):
     async with aiohttp.ClientSession() as session:
-        tasks = [get_page_title(session, url) for url in urls]
-        titles = await asyncio.gather(*tasks)
-        return titles
+        task = get_page_headers(session, url)
+        title = await asyncio.gather(task)
+        return title
 
 def pithon(code):
     global result
@@ -178,6 +189,12 @@ def test():
     save_verified(verified_domains)
     print("ОТКЛЮЧЕНИЕ")
 
+def get_title(url):
+    return asyncio.run(get_page_titles(url))[0]
 
 if __name__ == "__main__":
-    test()
+    while True:
+        t = input()
+
+        print(get_title(t))
+    #test()

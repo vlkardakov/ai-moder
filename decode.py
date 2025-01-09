@@ -1,29 +1,69 @@
+from flask import Flask, request, jsonify, Response
 import requests
-from urllib.parse import urlparse, parse_qs, unquote
+from urllib.parse import urlparse, parse_qs, unquote, urljoin
 from urllib.request import urlopen
-from urllib.parse import urljoin
 from urllib.error import HTTPError, URLError
+from gemini import gemini
+#
+
+import asyncio
+import aiohttp
+from bs4 import BeautifulSoup
+
+
+async def get_page_headers(session, url):
+    try:
+        async with session.get(url) as response:
+            response.raise_for_status()
+            html = await response.text()
+            soup = BeautifulSoup(html, 'html.parser')
+
+            title_tag = soup.title
+            title = title_tag.string.strip() if title_tag and title_tag.string else None
+
+            h1_tags = [tag.string.strip() for tag in soup.find_all('h1') if tag.string]
+            h2_tags = [tag.string.strip() for tag in soup.find_all('h2') if tag.string]
+            h3_tags = [tag.string.strip() for tag in soup.find_all('h3') if tag.string]
+
+            pre_compare = f"{title=} {h1_tags=} {h2_tags=} {h3_tags=}".replace("[", "").replace("]", "")
+
+            return
+    except aiohttp.ClientError as e:
+        # print(f"({url}): {e}")
+        return None, [], [], []
+    except AttributeError:
+        # print(f"({url}).")
+        return None, [], [], []
+
+
+async def get_page_titles(url):
+    async with aiohttp.ClientSession() as session:
+        task = get_page_headers(session, url)
+        title = await asyncio.gather(task)
+        return title
+
+
+def get_title(url):
+    return asyncio.run(get_page_titles(url))[0]
+
 
 def load_params():
     with open("params.txt", "r") as f:
         return pithon(f"result = {f.read()}")
 
+
 def pithon(code):
     global result
     try:
         local_vars = {}
-        exec(code, {}, local_vars)  # Используем локальный словарь для хранения переменных
-        return local_vars.get('result')  # Возвращаем значение переменной result
+        exec(code, {}, local_vars)
+        return local_vars.get('result')
     except Exception as e:
         return e
 
 
 def final_from_url(latest):
-    params = ["redirect",'redir','r',
-              'link',
-              'go_to','goto','go',
-              'returnUrl','aurl','url','u','p','q'
-              'target','targ','get']
+    params = load_params()
     for i in range(10):
         for el in params:
             latest = decode(latest.split(f"?{el}=")[-1])
@@ -35,46 +75,49 @@ def final_from_url(latest):
 
     return latest
 
+
 def decode(url):
     return unquote(unquote(unquote(url)))
+
 
 def redirects(url):
     try:
         url = decode(url)
         response = urlopen(url)
         final_url = response.geturl()
-        #print("URL Получен!")
-        return decode(final_url)
+        print("URL получен!")
+        return decode(final_url).strip("/")
     except HTTPError as e:
-        # Обработка HTTP ошибок (например, 404, 500)
         print(f"HTTP Error: {e.code} for URL: {url}")
-        return url  # Возвращаем исходный URL, так как редиректа не было
+        return url
     except URLError as e:
-        # Обработка ошибок URL (например, неправильный формат URL)
         print(f"URL Error: {e.reason} for URL: {url}")
         return url
     except Exception as e:
-        # Обработка других возможных ошибок
         print(f"An unexpected error occurred: {e}")
         return url
     except:
         return url
 
 
+def describe_url(link):
+    url = decode(link).strip("/")
 
-def decode_url(link):
-    url = decode(link)
+    url = final_from_url(url)
+    url = redirects(url)
+    url = final_from_url(url)
 
-    latest = final_from_url(url) #final_from_redirect(final_from_url(final_from_redirect(final_from_url(url))))
-    latest = redirects(latest)
-    latest = final_from_url(latest)
-    if latest != url:
-        print(f"редирект для {url}: {latest}")
-        return latest
-    else:
-        print(f"редирект для {url}: нету редиректа")
-        return "noredir"
+    if url == link:
+        url = ""
 
-if __name__ == "__main__":
-    url = input("URL = ")
-    print(f"\nURL: {decode_url(url)}")
+    pre_title = get_title(url)
+
+    title = gemini(
+        f"Проанализируй Title и h-теги страницы в интренете и сочини хорошее название для seo-продвижения этой страницы на том же языке или смеси языков, на котором написаны title и теги.\nТеги:{pre_title}")
+
+    print(f"для {url}: {latest}")
+    return url, title
+
+
+def main(url):
+    return describe_url(url)
