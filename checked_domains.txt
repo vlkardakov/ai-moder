@@ -1,1 +1,14 @@
-[]
+['twitter.com' 'x.com' 'graphicscience.jp' 'graphicscience.jp'
+ 'fewpal.com' 'fewpal.com' 'zhzmsp.com' 'zhzmsp.com' 'caithness.org'
+ 'shop-hanghieu.com' 'daycarenearme.info' 'daycarenearme.info'
+ 'centralcallegal.net' 'centralcallegal.net'
+ 'annapolisofficefurniture.com' 'annapolisofficefurniture.com'
+ 'pattern-wiki.win' 'pattern-wiki.win' 'catalystgroupinternational.com'
+ 'catalystgroupinternational.com' 'blogbright.net' 'blogbright.net'
+ '1moli.top' '1moli.top' 'verifylock.com' 'verifylock.com'
+ 'greenentek.com' 'greenentek.com' 'morphomics.science'
+ 'morphomics.science' 'nerdgaming.science' 'nerdgaming.science'
+ 'scanstroy.ru' 'scanstroy.ru' 'business4lions.com' 'business4lions.com'
+ 'anu.sh' 'casinosite88.com' 'hbrarabic.com' 'hbrarabic.com' 'sdhuifa.com'
+ 'sdhuifa.com' 'leparissa.info' 'leparissa.info' 'scoups.com' 'scoups.com'
+ 'shenasname.ir' 'shenasname.ir']
