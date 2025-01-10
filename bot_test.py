@@ -184,7 +184,8 @@ def handle_document(message):
                         clean()
                         #bot.reply_to(message, f"таблицы очищена")
                         scams = []
-                        urls_massives = split_array(random.shuffle(read()))
+                        readed = read()
+                        urls_massives = split_array(random.shuffle(readed))
 
                         total_links_not_sorted = np.array([], dtype=str)
 
