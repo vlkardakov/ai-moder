@@ -176,8 +176,6 @@ def handle_document(message):
                         loaded_checked = load_checked()
                         for el in loaded_checked:
                             checked_domains = np.append(checked_domains, el)
-                        loaded_checked = None
-                        verified_domains = load_verified()
                         #bot.reply_to(message, f"Домены загружены")
                         err_tag = get_tag()
                         #bot.reply_to(message, f"Тэг получен")
@@ -186,46 +184,44 @@ def handle_document(message):
                         scams = []
                         urls_massives = split_array(read())
 
-                        new_urls = []
+                        total_links = np.array([], dtype=str)
 
-                        total_titles = []
+                        for element in urls_massives:
+                            befored = element["before"]
+                            afterd = element["after"]
+                            if not (get_domain(befored) in checked_domains and get_domain(afterd) in checked_domains):
+                                print(element)
+                                if not befored in checked_domains:
+                                    checked_domains = np.append(checked_domains, befored)
+                                if not afterd in checked_domains:
+                                    checked_domains = np.append(checked_domains, afterd)
+                                total_links = np.append(total_links, element)
+                            else:
+                                print("PASS")
 
-                        for urls_massive in urls_massives:
-                            titles = get_page_titles(urls_massive)
-                            total_titles += titles
-                        for url in urls:
-                                long_domain0 = get_domain(url)
-                                short_domain0 = get_domain(describe_url(url))
 
-                                if not long_domain0 in checked_domains:
-                                    checked_domains = np.append(checked_domains, long_domain0)
-                                if not short_domain0 in checked_domains:
-                                    checked_domains = np.append(checked_domains, short_domain0)
-                        urls = new_urls
 
                         bot.reply_to(message, f"Таблица прочитана")
-
-                        for i in range(len(urls) - 1):
+                        using_len = len(total_links)
+                        bot.reply_to(message, f"Найдено {using_len} нормальный ссылок!")
+                        for i in range(using_len):
                             if stop_processing:
                                 break
 
                             try:
                                 time_start_domains = time.time()
-                                url = urls[i]
-                                long_url = url
-                                long_domain = get_domain(url)
+                                link = total_links[i]
+                                url = link["after"]
+                                domain = get_domain(url)
+                                before = link["before"]
+                                before_domain = get_domain(link["before"])
+                                title = total_links[i]["title"]
 
-                                url = describe_url(url)
-                                short_domain = get_domain(url)
-                                print(f"URL сокращения: {short_domain}")
+
+
+                                print(f"Сводка о ссылке. \nДлинная ссылка: {before}\nРедирект: {url}")
 
                                 print(f"\nВремени на обработку доменов: {time.time() - time_start_domains}")
-                                time_start_generation = time.time()
-                                checked_domains = np.append(checked_domains, long_domain)
-                                checked_domains = np.append(checked_domains, short_domain)
-                                title = asyncio.run(get_page_titles([url]))[0]
-                                print(f"{title=}")
-
                                 time.sleep(3)
 
                                 img = create_screenshot()
@@ -233,18 +229,16 @@ def handle_document(message):
 
                                 time.sleep(0.1)
                                 send("{Ctrl down}{w}{Ctrl up}")
-                                go_to(describe_url(urls[i + 1]))
-                                print("translating")
+
+                                if i < (using_len -1):
+                                    go_to(total_links[i+1]["after"])
                                 try:
                                     title = translate(title)
                                 except:
                                     pass
-
+                                time_start_generation = time.time()
                                 prompt = \
-                                    fr"""
-                                                                    Ты должен описать, что ты видишь, и считаешь ли, что сайт - мошеннический. Не более 2000 символов!!!
-
-
+                                    f"""Ты должен описать, что ты видишь, и считаешь ли, что сайт - мошеннический. Не более 2000 символов!!!
                                                                     Признаки мошеннических сайтов: говорят, что покупатель оплатил товар и просят получить деньги, всякие казино, другие розыгрыши, закос под службы доставки или интернет-магазины. 
                                                                     Уделя внимание Самому URL адресу, например amazon.s4674.world может выглядеть как сайт amazon, но быть мошенническим.
                                                                     Так же определяй, что сайт содержит 18+ контент, или например являются сервисами сокращения ссылок (мошенничество и так далее.
@@ -254,10 +248,10 @@ def handle_document(message):
                                                                     В ответе выдай (разделительные символы между ЧАСТЯМИ - "::": рассуждения::тип::оценка опасности сайта от 0 до 10 1, целым числом
                                                                     Пример ответа, кавычки не считаются, "Сайт выглядит как легитимный адрес поисковой системы Google.  Нет никаких подозрительных поддоменов или странных символов в адресе.  Сам сайт отображает стандартную страницу поиска Google, без каких-либо признаков мошенничества, таких как всплывающие окна, подозрительные запросы на оплату или ссылки на азартные игры.  На сайте отсутствует контент 18 ::хороший :: 0"
 
-                                                                    url и title сайта для проверки, структура url - title: {long_url} ({url}) - {title}
+                                                                    url и title сайта для проверки, структура url - title: {before} ({url}) - {title}
                                                                     """
                                 print("describing")
-                                result = describe(prompt, img).split("::")  # Используем tempimg.png
+                                result = describe(prompt, img).split("::")
 
                                 print(f"{result=}")
 
@@ -269,32 +263,31 @@ def handle_document(message):
                                     pass
                                 elif "легитимный" in result[1]:
                                     pass
-                                    # verified_domains.append(current_domain)
                                 elif result[1] in ("хороший", 'легитимный', 'новости', 'сократитель ссылок', 'форум'):
                                     pass
                                 else:
                                     scams.append(
                                         {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
-                                         "long_domain": long_domain, "short_domain": short_domain, "title": title})
+                                         "before": before_domain, "domain": domain, "title": title, "time":time.time() - time_start_domains})
                                     try:
                                         with open("tempimg.png", "rb") as img_file:
                                             bot.send_photo(message.chat.id, img_file,
-                                                           caption=f"""URL: {long_url} ({url})\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((len(urls) - 1) - i) * 10)))}""".encode(
+                                                           caption=f"""URL: {before} ({url}) - {title}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
                                                                'utf-8'))
                                     except:
                                         try:
                                             bot.reply_to(message,
-                                                         f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - {title}")
+                                                         f"ПРОВЕРЬТЕ URL\n{before} ({url}) - {title}")
 
                                         except:
                                             try:
                                                 bot.reply_to(message,
-                                                             f"ПРОВЕРЬТЕ URL\n{url} ({short_domain}) - Без TITLE")
+                                                             f"ПРОВЕРЬТЕ URL\n{before} ({url}) - Без TITLE")
                                             except:
                                                 pass
 
                                     try:
-                                        os.remove("tempimg.png")  # Удаляем изображение
+                                        os.remove("tempimg.png")
                                     except:
                                         pass
                                 print(f"Времени на всё: {time.time() - time_start_domains}")
@@ -302,18 +295,16 @@ def handle_document(message):
                                 print(f"Ошибка внутри цикла: {e}")
                                 save(f"ОТЧЁТ", scams)
                                 save_checked(checked_domains)
-                                save_verified(verified_domains)
-                                #err_count -= 1
-                                #print(f"ПРОИЗОШЛА ОШИБКА, РАБОТА СОХРАНЕНА. ЧТОБЫ СЛОМАТЬ, ЕЩЁ {err_count} ОШИБОК")
                                 with open("tempimg.png", "rb") as img_file:
                                     try:
                                         bot.send_photo(message.chat.id, img_file,
-                                                       caption=f"""{url} - {title}\n\nНе удалось обработать! \n#{err_tag}""")
+                                                       caption=f"""{before} ({url}) - {title}\n\nНе удалось обработать! \n#{err_tag}""")
                                         os.remove("tempimg.png")
                                     except:
                                         try:
                                             bot.send_photo(message.chat.id, img_file,
                                                            caption=f"""Не удалось обработать! \n#{err_tag}""")
+                                            #time.sleep(0.2)
                                             os.remove("tempimg.png")
                                         except:
                                             pass
@@ -321,7 +312,6 @@ def handle_document(message):
                         print("РАБОТА ОКОНЧЕНА, СОХРАНЕНИЕ")
                         save(f"ОТЧЁТ", scams)
                         save_checked(checked_domains)
-                        save_verified(verified_domains)
                         print("ОТКЛЮЧЕНИЕ")
 
                         time.sleep(4)
