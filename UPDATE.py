@@ -21,6 +21,9 @@ def github_update():
 if __name__ == "__main__":
     window_up("GitHub Desktop")
     github_update()
-    time.sleep(20)
+    time.sleep(10)
+    github_update()
+    time.sleep(10)
     subprocess.Popen(["python", "bot_test.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+    exit()
 
