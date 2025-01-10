@@ -150,9 +150,11 @@ def stop_processing_command(message):
     bot.reply_to(message, "Exited with no exit-code.")
     exit()
 
-@bot.message_handler(commands=['exit'])
+@bot.message_handler(commands=['restart'])
 def stop_processing_command(message):
-    bot.reply_to(message, "Я не умею этого делать.")
+    bot.reply_to(message, " Ухожу на перезагрузку..")
+    subprocess.Popen(["python", "UPDATE.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+    exit()
 
 @bot.message_handler(content_types=['document'])
 def handle_document(message):

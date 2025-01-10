@@ -1,4 +1,4 @@
-import pyautogui as pg
+import pyautogui as pg, time, subprocess
 
 def window_up(window_title):
   try:
@@ -21,3 +21,6 @@ def github_update():
 if __name__ == "__main__":
     window_up("GitHub Desktop")
     github_update()
+    time.sleep(20)
+    subprocess.Popen(["python", "bot_test.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+
