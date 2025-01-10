@@ -71,23 +71,25 @@ def final_from_url(latest):
 def decode(url):
     return unquote(unquote(unquote(url)))
 
+thread_index = 0
+
 async def async_redirects(session, url):
+    global thread_index
     try:
-        i = random.randint(0,100)
-        print(f"{i} обработка started")
+        print(f"{thread_index} обработка started")
         url = decode(url)
-        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=4)) as response:
+        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=8)) as response:
             final_url = str(response.url)
-            print(f"URL получен! для {i}")
+            print(f"URL получен! для {thread_index}")
             return decode(final_url).strip("/")
     except aiohttp.ClientError as e:
-        print(f"Aiohttp Client Error: {e} for URL: {url}")
+        print(f"Ошибка для {thread_index}: Aiohttp Client Error: {e} for URL: {url}")
         return url
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Ошибка для {thread_index}: An unexpected error occurred: {e}")
         return url
     except asyncio.TimeoutError:
-        print(f"Timeout during redirect for URL: {url}")
+        print(f"Ошибка для {thread_index}: Timeout during redirect for URL: {url}")
         return url
 
 async def async_describe_url(session, link):
