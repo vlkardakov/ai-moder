@@ -153,7 +153,7 @@ def stop_processing_command(message):
 @bot.message_handler(commands=['restart'])
 def stop_processing_command(message):
     bot.reply_to(message, " Ухожу на перезагрузку..")
-    subprocess.Popen(["python", "UPDATE.py"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+    os.system("start UPDATE.exe")
     exit()
 
 @bot.message_handler(content_types=['document'])
