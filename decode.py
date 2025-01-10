@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 async def get_page_headers(session, url):
     try:
-        async with session.get(url) as response:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=4)) as response:
             response.raise_for_status()
             html = await response.text()
             soup = BeautifulSoup(html, 'html.parser')
@@ -27,10 +27,13 @@ async def get_page_headers(session, url):
 
             return pre_compare
     except aiohttp.ClientError as e:
-        # print(f"({url}): {e}")
+        print(f"Error getting headers for ({url}): {e}")
         return None
     except AttributeError:
-        # print(f"({url}).")
+        print(f"AttributeError getting headers for ({url}).")
+        return None
+    except asyncio.TimeoutError:
+        print(f"Timeout getting headers for ({url}).")
         return None
 
 async def get_page_titles(session, url):
@@ -73,7 +76,7 @@ async def async_redirects(session, url):
         i = random.randint(0,100)
         print(f"{i} обработка started")
         url = decode(url)
-        async with session.get(url, allow_redirects=True) as response:
+        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=4)) as response:
             final_url = str(response.url)
             print(f"URL получен! для {i}")
             return decode(final_url).strip("/")
@@ -82,6 +85,9 @@ async def async_redirects(session, url):
         return url
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        return url
+    except asyncio.TimeoutError:
+        print(f"Timeout during redirect for URL: {url}")
         return url
 
 async def async_describe_url(session, link):
@@ -116,7 +122,8 @@ if __name__ == '__main__':
     test_urls = [
         "https://google.com",
         "https://example.com?go_to=https://www.google.com",
-        "https://www.youtube.com"
+        "https://www.youtube.com",
+        "http://httpbin.org/delay/5" # Example of a slow loading page
     ]
 
     results = describe_url(test_urls)
