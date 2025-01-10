@@ -2,6 +2,7 @@ from urllib.parse import urlparse, parse_qs, unquote, urljoin
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 from gemini import gemini
+import random
 #
 
 import asyncio
@@ -69,10 +70,12 @@ def decode(url):
 
 async def async_redirects(session, url):
     try:
+        i = random.randint(0,100)
+        print(f"{i} обработка started")
         url = decode(url)
         async with session.get(url, allow_redirects=True) as response:
             final_url = str(response.url)
-            print("URL получен!")
+            print(f"URL получен! для {i}")
             return decode(final_url).strip("/")
     except aiohttp.ClientError as e:
         print(f"Aiohttp Client Error: {e} for URL: {url}")
