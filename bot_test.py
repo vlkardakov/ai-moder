@@ -191,8 +191,10 @@ def handle_document(message):
                         total_links_not_sorted = np.array([], dtype=str)
 
                         for el in urls_massives:
-                            total_links_not_sorted = np.append(total_links_not_sorted, describe_url(el))
-
+                            try:
+                                total_links_not_sorted = np.append(total_links_not_sorted, describe_url(el))
+                            except:
+                                print("pass error appending...")
 
                         total_links = np.array([], dtype=str)
 
