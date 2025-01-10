@@ -323,7 +323,10 @@ def handle_document(message):
 
                         print("РАБОТА ОКОНЧЕНА, СОХРАНЕНИЕ")
                         save(f"ОТЧЁТ", scams)
-                        save_checked(checked_domains)
+                        try:
+                            save_checked(checked_domains)
+                        except:
+                            pass
                         print("ОТКЛЮЧЕНИЕ")
 
                         time.sleep(4)
