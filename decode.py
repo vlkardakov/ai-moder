@@ -110,7 +110,7 @@ async def process_url(session, url):
 
 async def describe_urls(urls):
     async with aiohttp.ClientSession() as session:
-        tasks = [process_url(session, url) for url in urls]
+        tasks = [process_url(session, url.encode("latin-1")) for url in urls]
         results = await asyncio.gather(*tasks)
         return results
 
