@@ -1,3 +1,5 @@
+import random
+
 import telebot
 import pandas as pd
 import time
@@ -134,7 +136,7 @@ def send(text):
 stop_processing = False
 
 
-def split_array(arr, chunk_size=10):
+def split_array(arr, chunk_size=7):
     return np.array_split(arr, np.ceil(len(arr) / chunk_size))
 
 @bot.message_handler(commands=['stop'])
@@ -182,7 +184,7 @@ def handle_document(message):
                         clean()
                         #bot.reply_to(message, f"таблицы очищена")
                         scams = []
-                        urls_massives = split_array(read())
+                        urls_massives = split_array(random.shuffle(read()))
 
                         total_links_not_sorted = np.array([], dtype=str)
 
