@@ -145,6 +145,15 @@ def stop_processing_command(message):
     stop_processing = True
     bot.reply_to(message, "Обработка остановлена. Подождите завершения...")
 
+@bot.message_handler(commands=['exit'])
+def stop_processing_command(message):
+    bot.reply_to(message, "Exited with no exit-code.")
+    exit()
+
+@bot.message_handler(commands=['exit'])
+def stop_processing_command(message):
+    bot.reply_to(message, "Я не умею этого делать.")
+
 @bot.message_handler(content_types=['document'])
 def handle_document(message):
     global stop_processing
