@@ -147,7 +147,7 @@ def stop_processing_command(message):
 
 @bot.message_handler(commands=['exit'])
 def stop_processing_command(message):
-    bot.reply_to(message, "Exited with no exit-code.")
+    bot.reply_to(message, "ОТКЛЮЧЕНИЕ.")
     exit()
 
 @bot.message_handler(commands=['restart'])
