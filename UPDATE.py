@@ -1,3 +1,5 @@
 import pyautogui as pg
 
-pg.click(500, 500)
+
+def github_update():
+    pg.click(750, 80)
