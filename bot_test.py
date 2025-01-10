@@ -121,7 +121,7 @@ def translate(text):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.reply_to(message, "Отправьте таблицу CSV!")
+    bot.reply_to(message, "Отправьте таблицу CSV! [Тык](https://oqp.ru/vlk)")
 
 from datetime import datetime
 
@@ -283,18 +283,18 @@ def handle_document(message):
                                          "before": before_domain, "domain": domain, "title": title, "time":time.time() - time_start_domains})
                                     try:
                                         with open("tempimg.png", "rb") as img_file:
-                                            bot.send_photo(message.chat.id, img_file,
+                                            bot.send_photo(message.chat.id, img_file,parse_mode='MarkdownV2',
                                                            caption=f"""URL: {before} ({url}) - {title}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
                                                                'utf-8'))
                                     except:
                                         try:
                                             bot.reply_to(message,
-                                                         f"ПРОВЕРЬТЕ URL\n{before} ({url}) - {title}")
+                                                         f"ПРОВЕРЬТЕ URL\n[{before}]({url}) - {title}")
 
                                         except:
                                             try:
                                                 bot.reply_to(message,
-                                                             f"ПРОВЕРЬТЕ URL\n{before} ({url}) - Без TITLE")
+                                                             f"ПРОВЕРЬТЕ URL\n{before} ({url}) - Без TITLE",parse_mode='MarkdownV2')
                                             except:
                                                 pass
 
@@ -310,11 +310,11 @@ def handle_document(message):
                                 with open("tempimg.png", "rb") as img_file:
                                     try:
                                         bot.send_photo(message.chat.id, img_file,
-                                                       caption=f"""{before} ({url}) - {title}\n\nНе удалось обработать! \n#{err_tag}""")
+                                                       caption=f"""{before} ({url}) - {title}\n\nНе удалось обработать! \n#{err_tag}""", parse_mode='MarkdownV2')
                                         os.remove("tempimg.png")
                                     except:
                                         try:
-                                            bot.send_photo(message.chat.id, img_file,
+                                            bot.send_photo(message.chat.id, img_file, parse_mode='MarkdownV2',
                                                            caption=f"""Не удалось обработать! \n#{err_tag}""")
                                             #time.sleep(0.2)
                                             os.remove("tempimg.png")
