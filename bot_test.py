@@ -184,9 +184,15 @@ def handle_document(message):
                         scams = []
                         urls_massives = split_array(read())
 
+                        total_links_not_sorted = np.array([], dtype=str)
+
+                        for el in urls_massives:
+                            total_links_not_sorted = np.append(total_links_not_sorted, describe_url(el))
+
+
                         total_links = np.array([], dtype=str)
 
-                        for element in urls_massives:
+                        for element in total_links_not_sorted:
                             befored = element["before"]
                             afterd = element["after"]
                             if not (get_domain(befored) in checked_domains and get_domain(afterd) in checked_domains):
