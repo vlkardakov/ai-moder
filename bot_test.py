@@ -233,7 +233,7 @@ def handle_document(message):
                             if stop_processing:
                                 break
                             else:
-                                link = describe_url([urls[i]])
+                                link = describe_url([urls[i]])[0]
                                 time_start_domains = time.time()
                                 url = link["after"]
                                 domain = get_domain(url)
