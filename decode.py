@@ -150,6 +150,7 @@ def process_url(url):
 def describe_url(urls):
     results = []
     for url in urls:
+            print(f"{url=}")
             #try:
             results.append(process_url(url))
             #except Exception as e:
