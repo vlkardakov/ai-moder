@@ -75,6 +75,7 @@ thread_index = 0
 
 async def async_redirects(session, url):
     global thread_index
+    thread_index += 1
     try:
         print(f"{thread_index} обработка started")
         url = decode(url)
