@@ -3,7 +3,7 @@ from random import randint
 
 
 def decode(text):
-    url = f"http://87.120.165.56:4440"#{randint(0,9)}"
+    url = f"http://87.120.165.56:444{randint(0,0)}"
     data = {'url': text}
     try:
         response = requests.post(url, data=data)
