@@ -148,7 +148,7 @@ def stop_processing_command(message):
 @bot.message_handler(commands=['exit'])
 def stop_processing_command(message):
     bot.reply_to(message, "ОТКЛЮЧЕНИЕ.")
-    exit()
+    os.system("taskkill /IM python.exe /F")
 
 @bot.message_handler(commands=['restart'])
 def stop_processing_command(message):
