@@ -78,7 +78,7 @@ async def async_redirects(session, url):
     try:
         print(f"{thread_index} обработка started")
         url = decode(url)
-        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=8)) as response:
+        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=2)) as response:
             final_url = str(response.url)
             print(f"URL получен! для {thread_index}")
             return decode(final_url).strip("/")
