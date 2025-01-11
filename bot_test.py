@@ -121,7 +121,7 @@ def translate(text):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.reply_to(message, "Отправьте таблицу CSV! [Тык](https://oqp.ru/vlk)")
+    bot.reply_to(message, "Отправьте таблицу CSV! [<Тап>](<https://oqp.ru/vlk)>")
 
 from datetime import datetime
 
