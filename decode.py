@@ -3,41 +3,38 @@ from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 from gemini import gemini
 import random
-#
-
-import asyncio
-import aiohttp
+import requests
 from bs4 import BeautifulSoup
 
-async def get_page_headers(session, url):
+def get_page_headers(url):
     try:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=4)) as response:
-            response.raise_for_status()
-            html = await response.text()
-            soup = BeautifulSoup(html, 'html.parser')
+        response = requests.get(url, timeout=4)
+        response.raise_for_status()
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
 
-            title_tag = soup.title
-            title = title_tag.string.strip() if title_tag and title_tag.string else None
+        title_tag = soup.title
+        title = title_tag.string.strip() if title_tag and title_tag.string else None
 
-            h1_tags = [tag.string.strip() for tag in soup.find_all('h1') if tag.string]
-            h2_tags = [tag.string.strip() for tag in soup.find_all('h2') if tag.string]
-            h3_tags = [tag.string.strip() for tag in soup.find_all('h3') if tag.string]
+        h1_tags = [tag.string.strip() for tag in soup.find_all('h1') if tag.string]
+        h2_tags = [tag.string.strip() for tag in soup.find_all('h2') if tag.string]
+        h3_tags = [tag.string.strip() for tag in soup.find_all('h3') if tag.string]
 
-            pre_compare = f"{title}; {h1_tags}; {h2_tags}; {h3_tags};".replace("[", "").replace("]", "")
+        pre_compare = f"{title}; {h1_tags}; {h2_tags}; {h3_tags};".replace("[", "").replace("]", "")
 
-            return pre_compare
-    except aiohttp.ClientError as e:
+        return pre_compare
+    except requests.exceptions.RequestException as e:
         print(f"Error getting headers for ({url}): {e}")
         return None
     except AttributeError:
         print(f"AttributeError getting headers for ({url}).")
         return None
-    except asyncio.TimeoutError:
+    except requests.exceptions.Timeout:
         print(f"Timeout getting headers for ({url}).")
         return None
 
-async def get_page_titles(session, url):
-    title = await get_page_headers(session, url)
+def get_page_titles(url):
+    title = get_page_headers(url)
     return title
 
 def load_params():
@@ -55,14 +52,22 @@ def pithon(code):
 
 def final_from_url(latest):
     params = load_params()
-    for _ in range(10):
+    for i in range(10):
         for el in params:
-            if f"?{el}=" in latest:
-                latest = decode(latest.split(f"?{el}=")[-1])
+            try:
+                pre_latest = decode(latest.split(f"?{el}=")[-1])
+                if "." in pre_latest or "http" in pre_latest:
+                    latest = pre_latest
+            except IndexError:
+                pass  # Handle cases where the parameter is not found
 
         for el in params:
-            if f"&{el}=" in latest:
-                latest = decode(latest.split(f"&{el}=")[-1])
+            try:
+                pre_latest = decode(latest.split(f"&{el}=")[-1])
+                if "." in pre_latest or "http" in pre_latest:
+                    latest = pre_latest
+            except IndexError:
+                pass  # Handle cases where the parameter is not found
 
         latest = latest.strip().strip("/")
 
@@ -90,7 +95,6 @@ def redirects(url):
     except:
         return url
 
-
 def final_link(link):
     url2 = decode(link).strip("/")
     url = url2
@@ -103,62 +107,57 @@ def final_link(link):
         url = ""
     return url
 
-
 thread_index = 0
 
-async def async_redirects(session, url):
+def sync_redirects(url):
     global thread_index
     thread_index += 1
     try:
         print(f"{thread_index} обработка started")
         url = decode(url)
-        async with session.get(url, allow_redirects=True, timeout=aiohttp.ClientTimeout(total=2)) as response:
-            final_url = str(response.url)
-            print(f"URL получен! для {thread_index}")
-            return decode(final_url).strip("/")
-    except aiohttp.ClientError as e:
-        print(f"Ошибка для {thread_index}: Aiohttp Client Error: {e} for URL: {url}")
+        response = requests.get(url, allow_redirects=True, timeout=2)
+        final_url = str(response.url)
+        print(f"URL получен! для {thread_index}")
+        return decode(final_url).strip("/")
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка для {thread_index}: Requests Error: {e} for URL: {url}")
         return url
     except Exception as e:
         print(f"Ошибка для {thread_index}: An unexpected error occurred: {e}")
         return url
-    except asyncio.TimeoutError:
+    except requests.exceptions.Timeout:
         print(f"Ошибка для {thread_index}: Timeout during redirect for URL: {url}")
         return url
 
-async def async_describe_url(session, link):
+def sync_describe_url(link):
     before_url = decode(link).strip("/")
     url = before_url
 
     url = final_from_url(url)
-    url = await async_redirects(session, url)
+    url = sync_redirects(url)
     url = final_from_url(url)
     return before_url, url
 
-async def get_title_async(session, url):
-    title_str = await get_page_titles(session, url)
+def get_title_sync(url):
+    title_str = get_page_titles(url)
     return title_str
 
-async def process_url(session, url):
-    before, after = await async_describe_url(session, url)
-    title = await get_title_async(session, after)
+def process_url(url):
+    before, after = sync_describe_url(url)
+    title = get_title_sync(after)
     return {"before": before, "after": after, "title": title}
 
-async def describe_urls(urls):
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for url in urls:
-            try:
-                tasks.append(process_url(session, url))
-            except:
-                pass
-        results = await asyncio.gather(*tasks)
-        return results
+def describe_url(urls):
+    results = []
+    for url in urls:
+        try:
+            results.append(process_url(url))
+        except Exception as e:
+            print(f"Error processing URL {url}: {e}")
+            pass
+    return results
 
 # Example usage:
-def describe_url(urls):
-    return asyncio.run(describe_urls(urls))
-
 if __name__ == '__main__':
     test_urls = [
         "https://google.com",
