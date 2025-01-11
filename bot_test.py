@@ -232,7 +232,7 @@ def handle_document(message):
                         for i in range(using_len):
                             if stop_processing:
                                 break
-                            try:
+                            else:
                                 link = describe_url([urls[i]])
                                 time_start_domains = time.time()
                                 url = link["after"]
@@ -313,23 +313,7 @@ def handle_document(message):
                                     except:
                                         pass
                                 print(f"Времени на всё: {time.time() - time_start_domains}")
-                            except Exception as e:
-                                print(f"Ошибка внутри цикла: {e}")
-                                save(f"ОТЧЁТ", scams)
-                                save_checked(checked_domains)
-                                with open("tempimg.png", "rb") as img_file:
-                                    try:
-                                        bot.send_photo(message.chat.id, img_file,
-                                                       caption=f"""{before} ({url}) - {title}\n\nНе удалось обработать! \n#{err_tag}""", parse_mode='MarkdownV2')
-                                        os.remove("tempimg.png")
-                                    except:
-                                        try:
-                                            bot.send_photo(message.chat.id, img_file, parse_mode='MarkdownV2',
-                                                           caption=f"""Не удалось обработать! \n#{err_tag}""")
-                                            #time.sleep(0.2)
-                                            os.remove("tempimg.png")
-                                        except:
-                                            pass
+
 
                         print("РАБОТА ОКОНЧЕНА, СОХРАНЕНИЕ")
                         save(f"ОТЧЁТ", scams)
