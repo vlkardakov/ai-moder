@@ -71,6 +71,39 @@ def final_from_url(latest):
 def decode(url):
     return unquote(unquote(unquote(url)))
 
+def redirects(url):
+    try:
+        url = decode(url)
+        response = urlopen(url)
+        final_url = response.geturl()
+        print("URL получен!")
+        return decode(final_url).strip("/")
+    except HTTPError as e:
+        print(f"HTTP Error: {e.code} for URL: {url}")
+        return url
+    except URLError as e:
+        print(f"URL Error: {e.reason} for URL: {url}")
+        return url
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return url
+    except:
+        return url
+
+
+def final_link(link):
+    url2 = decode(link).strip("/")
+    url = url2
+
+    url = final_from_url(url)
+    url = redirects(url)
+    url = final_from_url(url)
+
+    if url == link:
+        url = ""
+    return url
+
+
 thread_index = 0
 
 async def async_redirects(session, url):

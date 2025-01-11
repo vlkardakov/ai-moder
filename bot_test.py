@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from get_domain import get_domain
 from save import save
-from decode import describe_url
+from decode import describe_url, final_link
 
 print("imported")
 
@@ -197,18 +197,10 @@ def handle_document(message):
                         scams = []
                         readed = read()
                         random.shuffle(readed)
-                        urls_massives = split_array(readed)
+                        urls_not_sorted = readed
 
                         total_links_not_sorted = np.array([], dtype=str)
-
-                        for el in urls_massives:
-                            try:
-                                total_links_not_sorted = np.append(total_links_not_sorted, describe_url(el))
-                            except:
-                                print("pass error appending...")
-
-                        total_links = np.array([], dtype=str)
-
+                        """
                         for element in total_links_not_sorted:
                             befored = element["before"]
                             afterd = element["after"]
@@ -220,27 +212,34 @@ def handle_document(message):
                                     checked_domains = np.append(checked_domains, afterd)
                                 total_links = np.append(total_links, element)
                             else:
+                                print("PASS")"""
+
+                        new_urls = np.array
+
+                        for element in urls_not_sorted:
+                            domain = get_domain(element)
+                            if not domain in checked_domains:
+                                checked_domains = np.append(checked_domains, domain)
+                                new_urls = np.append(new_urls, element)
+                            else:
                                 print("PASS")
 
-
+                        urls = new_urls
 
                         bot.reply_to(message, f"Таблица прочитана")
-                        using_len = len(total_links)
-                        bot.reply_to(message, f"Найдено {using_len} нормальный ссылок!")
+                        using_len = len(urls)
+                        bot.reply_to(message, f"Найдено {using_len} нормальных ссылок!")
                         for i in range(using_len):
                             if stop_processing:
                                 break
-
                             try:
+                                link = describe_url([urls[i]])
                                 time_start_domains = time.time()
-                                link = total_links[i]
                                 url = link["after"]
                                 domain = get_domain(url)
                                 before = link["before"]
                                 before_domain = get_domain(link["before"])
-                                title = total_links[i]["title"]
-
-
+                                title = link["title"]
 
                                 print(f"Сводка о ссылке. \nДлинная ссылка: {before}\nРедирект: {url}")
 
@@ -254,7 +253,7 @@ def handle_document(message):
                                 send("{Ctrl down}{w}{Ctrl up}")
 
                                 if i < (using_len -1):
-                                    go_to(total_links[i+1]["after"])
+                                    go_to(final_link(urls[i + 1]))
                                 try:
                                     title = translate(title)
                                 except:
