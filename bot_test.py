@@ -277,7 +277,7 @@ def handle_document(message):
                                 print("describing")
                                 result = describe(prompt, img).split("::")
 
-                                print(f"{result=}")
+                                #print(f"{result=}")
 
                                 print(f"{result[-3]}")
                                 print(f"Тип        : {result[-2]}")
@@ -293,22 +293,11 @@ def handle_document(message):
                                     scams.append(
                                         {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
                                          "before": before_domain, "domain": domain, "title": title, "time":time.time() - time_start_domains})
-                                    try:
-                                        with open("tempimg.png", "rb") as img_file:
-                                            bot.send_photo(message.chat.id, img_file,parse_mode='MarkdownV2',
+                                    with open("tempimg.png", "rb") as img_file:
+                                        bot.send_photo(message.chat.id, img_file,parse_mode='MarkdownV2',
                                                            caption=f"""URL: {before} ({url}) - {title}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
                                                                'utf-8'))
-                                    except:
-                                        try:
-                                            bot.reply_to(message,
-                                                         f"ПРОВЕРЬТЕ URL\n[{before}]({url}) - {title}")
 
-                                        except:
-                                            try:
-                                                bot.reply_to(message,
-                                                             f"ПРОВЕРЬТЕ URL\n{before} ({url}) - Без TITLE",parse_mode='MarkdownV2')
-                                            except:
-                                                pass
 
                                     try:
                                         os.remove("tempimg.png")
