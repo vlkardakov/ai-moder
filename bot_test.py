@@ -214,13 +214,13 @@ def handle_document(message):
                             else:
                                 print("PASS")"""
 
-                        new_urls = np.array
+                        new_urls = []
 
                         for element in urls_not_sorted:
                             domain = get_domain(element)
                             if not domain in checked_domains:
                                 checked_domains = np.append(checked_domains, domain)
-                                new_urls = np.append(new_urls, element)
+                                new_urls.append(element)
                             else:
                                 print("PASS")
 
