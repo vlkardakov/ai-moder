@@ -150,11 +150,11 @@ def process_url(url):
 def describe_url(urls):
     results = []
     for url in urls:
-        try:
+            #try:
             results.append(process_url(url))
-        except Exception as e:
-            print(f"Error processing URL {url}: {e}")
-            pass
+            #except Exception as e:
+            #print(f"Error processing URL {url}: {e}")
+            #pass
     return results
 
 # Example usage:
