@@ -55,12 +55,12 @@ def decode_url(link):
         return latest
     else:
         print(f"редирект для {url}: нету редиректа")
-        return "noredir"
+        return ""
 
 app = Flask(__name__)
 
 @app.route("/", methods=["POST"])
-def givedata():
+def main():
     url = request.form.get('url', '')
     return decode_url(url)
 
