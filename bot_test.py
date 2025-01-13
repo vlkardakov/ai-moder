@@ -112,7 +112,7 @@ def create_screenshot():
 def go_to(url):
     try:
         prompt = f"start chrome {url}"
-        print(f"Trying {prompt}")
+        print(f"Trying `{prompt}`")
         os.system(prompt)
         print("Succes")
         return True
