@@ -121,7 +121,7 @@ def translate(text):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.reply_to(message, "Отправьте таблицу CSV [Тап](https://oqp.ru/vlk)", parse_mode='MarkdownV2')
+    bot.reply_to(message, "Отправьте таблицу CSV")
 
 from datetime import datetime
 
@@ -295,7 +295,7 @@ def handle_document(message):
                                         {"type": result[1], "danger": result[2], "url": url, "thoughts": result[0],
                                          "before": before_domain, "domain": domain, "title": title, "time":time.time() - time_start_domains})
                                     with open("tempimg.png", "rb") as img_file:
-                                        bot.send_photo(message.chat.id, img_file,parse_mode='MarkdownV2',
+                                        bot.send_photo(message.chat.id, img_file,
                                                            caption=f"""URL: {before} ({url}) - {title}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
                                                                'utf-8'))
 
