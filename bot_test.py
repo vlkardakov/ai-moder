@@ -278,7 +278,7 @@ def handle_document(message):
                                                                     url и title сайта для проверки, структура url - title: {before} ({url}) - {title}
                                                                     """
                                 print("describing")
-                                result = describe(prompt, img).split("::")
+                                result = describe(prompt, img)[:3000].split("::")
 
                                 #print(f"{result=}")
 
