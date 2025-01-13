@@ -257,8 +257,9 @@ def handle_document(message):
                                 time.sleep(0.1)
                                 send("{Ctrl down}{w}{Ctrl up}")
 
-                                if i < (using_len -1):
-                                    go_to(final_link(urls[i + 1]))
+                                while not go_to(final_link(urls[i + 1])):
+                                    if i < (using_len -1):
+                                        urls = np.delete(urls, i + 1)
                                 try:
                                     title = translate(title)
                                 except:
