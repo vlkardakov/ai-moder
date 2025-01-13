@@ -111,9 +111,13 @@ def create_screenshot():
 
 def go_to(url):
     try:
-        os.system(f"start chrome {url}")
+        prompt = f"start chrome {url}"
+        print(f"Trying {prompt}")
+        os.system(prompt)
+        print("Succes")
         return True
     except:
+        print("Fail")
         return False
 
 
@@ -257,9 +261,10 @@ def handle_document(message):
                                 time.sleep(0.1)
                                 send("{Ctrl down}{w}{Ctrl up}")
 
-                                while not go_to(final_link(urls[i + 1])):
-                                    if i < (using_len -1):
-                                        urls = np.delete(urls, i + 1)
+                                if i < (using_len - 1):
+                                    while not go_to(final_link(urls[i + 1])):
+                                        if i < (using_len -1):
+                                            urls = np.delete(urls, i + 1)
                                 try:
                                     title = translate(title)
                                 except:
