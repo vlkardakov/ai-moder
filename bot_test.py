@@ -17,7 +17,6 @@ import numpy as np
 import datetime
 from module import describe
 import time
-import webbrowser
 from cleancsv import clean
 from read import read
 import asyncio
@@ -111,7 +110,11 @@ def create_screenshot():
 
 
 def go_to(url):
-    webbrowser.open(url)
+    try:
+        os.system(f"start chrome {url}")
+        return True
+    except:
+        return False
 
 
 def translate(text):
