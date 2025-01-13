@@ -283,6 +283,7 @@ def handle_document(message):
                                 print(f"Тип        : {result[-2]}")
                                 print(f"Опасность  : {result[-1]}")
                                 print(f"Времени на генерацию: {time.time() - time_start_generation}")
+                                # ПИПЕЦ
                                 if "хороший" in result[1]:
                                     pass
                                 elif "легитимный" in result[1]:
