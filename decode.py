@@ -52,7 +52,7 @@ def pithon(code):
 
 def final_from_url(latest):
     params = load_params()
-    for i in range(10):
+    for i in range(2):
         for el in params:
             try:
                 pre_latest = decode(latest.split(f"?{el}=")[-1])
@@ -83,28 +83,17 @@ def redirects(url):
         final_url = response.geturl()
         print("URL получен!")
         return decode(final_url).strip("/")
-    except HTTPError as e:
-        print(f"HTTP Error: {e.code} for URL: {url}")
-        return url
-    except URLError as e:
-        print(f"URL Error: {e.reason} for URL: {url}")
-        return url
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return url
     except:
         return url
 
 def final_link(link):
-    url2 = decode(link).strip("/")
-    url = url2
+    url = decode(link).strip("/")
+
 
     url = final_from_url(url)
-    url = redirects(url)
-    url = final_from_url(url)
+    #url = redirects(url)
+    #url = final_from_url(url)
 
-    if url == link:
-        url = ""
     return url
 
 thread_index = 0
@@ -129,13 +118,11 @@ def sync_redirects(url):
         print(f"Ошибка для {thread_index}: Timeout during redirect for URL: {url}")
         return url
 
-def sync_describe_url(link):
+def get_before_and_after(link):
     before_url = decode(link).strip("/")
     url = before_url
 
-    url = final_from_url(url)
-    url = sync_redirects(url)
-    url = final_from_url(url)
+    url = final_link(url).strip("/")
     return before_url, url
 
 def get_title_sync(url):
@@ -143,9 +130,9 @@ def get_title_sync(url):
     return title_str
 
 def process_url(url):
-    before, after = sync_describe_url(url)
-    title = get_title_sync(after)
-    return {"before": before, "after": after, "title": title}
+    before, after = get_before_and_after(url)
+    #title = get_title_sync(after)
+    return {"before": before, "after": after, "title": "Title отключен"}
 
 def describe_url(urls):
     results = []

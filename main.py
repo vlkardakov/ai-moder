@@ -193,8 +193,4 @@ def get_title(url):
     return asyncio.run(get_page_titles(url))[0]
 
 if __name__ == "__main__":
-    while True:
-        t = input()
-
-        print(get_title(t))
-    #test()
+    test()
