@@ -131,8 +131,8 @@ def get_title_sync(url):
 
 def process_url(url):
     before, after = get_before_and_after(url)
-    #title = get_title_sync(after)
-    return {"before": before, "after": after, "title": "Title отключен"}
+    title = get_title_sync(after)
+    return {"before": before, "after": after, "title": title}
 
 def describe_url(urls):
     results = []
