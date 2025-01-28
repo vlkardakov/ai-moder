@@ -44,7 +44,7 @@ def describe(zapros, img):
     if len(zaprosi_history) > 0:
         #print("ПЕРЕКЛЮЧАЮСЬ...")
         current_key = get_next_api_key()
-        #print(f"Переключено на {current_key}")
+        print(f"ключ {current_key}")
         zaprosi_history = []
 
     genai.configure(api_key=current_key)
@@ -82,4 +82,3 @@ if __name__ == "__main__":
             img = img.resize((320, 180))  # Resize for comparison
         #t = input("::")
         print(describe("Проанализируй изображение и назови программу, в которой был сделан скриншот. Только название.", img))
-        print(len(zaprosi_history))
