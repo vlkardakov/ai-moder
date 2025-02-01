@@ -14,7 +14,7 @@ api_keys = [
     "AIzaSyCF4gSrVqI7wqP8jfOdD7V-fDo_TAImflY", # 9
     "AIzaSyDENOL9VDuCYYKsx_GkaYa_7qjrSPgiONM", # 10
     "AIzaSyCfLsRDmgJcgbkVVFGXOzIOd4heFtsvnnM", # mail@vlkardakov.ru
-    "AIzaSyBX2ERx5-x6tnctQgED7MK5YWBXHFkeQJ0", # 11
+    #"AIzaSyBX2ERx5-x6tnctQgED7MK5YWBXHFkeQJ0", # 11
     "AIzaSyA4BJ03mlU-hff2wqOH2Gh_YsqMMhcF1NE", #АБОБА
     # "","","","","","","","",""
 ]
