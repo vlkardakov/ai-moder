@@ -11,7 +11,7 @@ def normal_filename(link):
     return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_").replace("?", '').replace('=','').replace('%','') + ".png"
 
 def process_link(link):
-    try:
+
         # options = webdriver.ChromeOptions()
         options = Options()
         options.add_argument("--log-level=3")
@@ -33,8 +33,7 @@ def process_link(link):
         print(f"Скриншот сохранен как {output}")
 
         return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}
-    except:
-        return None
+
 def process_links(links):
     with ThreadPoolExecutor(max_workers=4) as executor:  # 4 потока для ускорения
         results = list(executor.map(process_link, links))
