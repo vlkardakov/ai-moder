@@ -38,17 +38,20 @@ def connect_database():
 
 def ban_domain(cursor, domain):
     try:
-        cursor.execute(f"INSERT INTO `short`.`black_domain` (`domain`) VALUES ('{domain}');")
-        print(f"Забанен {domain}!")
+        cursor.execute("INSERT INTO `short`.`black_domain` (`domain`) VALUES (%s);", (domain,))
+        print(f"+ {domain}!")
     except:
-        print(f"{domain} не забанен!!")
+        print(f"- {domain} ")
 def main():
     connection = connect_database()
     black_domains = read_csv(r"C:\Users\vlkardakov\Downloads\new.csv")
     if connection.is_connected():
+        print("///")
         cursor = connection.cursor()
         for black_domain in black_domains:
             ban_domain(cursor, black_domain)
+        print("///")
+
         print("Закончили, сохраняем...")
         connection.commit()# сохранение
         cursor.close()

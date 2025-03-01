@@ -23,11 +23,9 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from get_domain import get_domain
+from linkprocessing import process_links
 from save import save
 from decode import process_url, final_link
-import webbrowser
-import pyautogui as pg
 
 print("imported")
 
@@ -45,12 +43,10 @@ async def get_final_url_base(url):
         print(f"Ошибка при запросе: {e}")
         return None
 
-
 async def get_final_url(url):  # Замените на ваш URL
     final_url = await get_final_url_base(url)
     if final_url:
         return final_url
-
 
 async def get_page_title(session, url):
     try:
@@ -66,7 +62,6 @@ async def get_page_title(session, url):
     except AttributeError:
         # print(f"Заголовок не найден на странице ({url}).")
         return None
-
 
 async def get_page_titles(urls):
     async with aiohttp.ClientSession() as session:
@@ -105,14 +100,9 @@ def load_verified():
         return pithon(f"result = {f.read()}")
 
 
-def create_screenshot():
-    # Получаем скриншот экрана
-    screenshot = ImageGrab.grab()
-    return screenshot
-
-
-def go_to(url):
-    webbrowser.open(url)
+def open_screenshot(filename):
+    img = Image.open(filename)
+    return img
 
 
 def translate(text):
@@ -201,85 +191,62 @@ def handle_document(message):
                 # bot.reply_to(message, f"таблицы очищена")
                 scams = []
                 readed = read()
-                random.shuffle(readed)
+                # random.shuffle(readed)
                 urls_not_sorted = readed
 
                 total_links_not_sorted = np.array([], dtype=str)
 
-                new_urls = []
-
-                for element in urls_not_sorted:
-                    domain = get_domain(element)
-                    if not domain in checked_domains:
-                        checked_domains.append(domain)
-                        new_urls.append(element)
-                    else:
-                        print(f"PASS for {domain}")
-
-                urls = new_urls
+                urls = process_links(readed)
 
                 bot.reply_to(message, f"Таблица прочитана")
                 using_len = len(urls)
                 if using_len > 0:
                     bot.reply_to(message, f"Найдено {using_len} нормальных ссылок!")
-                    go_to(urls[0])
                     for i in range(using_len):
                         if stop_processing:
                             break
                         elif random.randint(0, 10) < 2:
                             save(f"ОТЧЁТ", scams)
-
                             save_checked(checked_domains)
                         try:
-                            described = process_url(urls[i])
-                            print(f"{described=}")
-                            link = described
+                            link = urls[i]
+                            if not link:
+                                continue
                             time_start_domains = time.time()
-                            url = link["after"]
-                            domain = get_domain(url)
-                            before = link["before"]
-                            before_domain = get_domain(link["before"])
+                            url = link["url"]
+                            domain = link['domain']
                             title = link["title"]
+                            screenshot_path = link['screenshot']
 
-                            print(f"Сводка о ссылке. \nДлинная ссылка: {before}\nРедирект: {url}")
 
-                            print(f"\nВремени на обработку доменов: {time.time() - time_start_domains}")
-                            print("sleep")
-                            time.sleep(3)
+                            print(f"Cсылка: {url}, Title: {title}, Скриншот: {screenshot_path}, Домен: {domain}")
 
-                            print("Img")
-                            img = create_screenshot()
-                            img.save("tempimg.png")  # Сохраняем скриншот
+
 
                             time.sleep(0.1)
-                            print("closing")
-                            send("{Ctrl down}w{Ctrl up}")
 
-                            if i < (using_len - 1):
-                                next_link = final_link(urls[i + 1])
-                                print(f"opening {next_link}")
-                                go_to(next_link)
                             try:
                                 print("translating")
                                 title = translate(title)
                             except:
                                 pass
+                            time.sleep(4)
                             time_start_generation = time.time()
                             prompt = \
                                 f"""Ты должен описать, что ты видишь, и считаешь ли, что сайт - мошеннический. Не более 2000 символов!!!
-                                                                        Признаки мошеннических сайтов: говорят, что покупатель оплатил товар и просят получить деньги, всякие казино, другие розыгрыши, закос под службы доставки или интернет-магазины. 
-                                                                        Уделя внимание Самому URL адресу, например amazon.s4674.world может выглядеть как сайт amazon, но быть мошенническим.
-                                                                        Так же определяй, что сайт содержит 18+ контент, или например являются сервисами сокращения ссылок (мошенничество и так далее.
+Признаки мошеннических сайтов: говорят, что покупатель оплатил товар и просят получить деньги, всякие казино, другие розыгрыши, закос под службы доставки или интернет-магазины. 
+Уделя внимание Самому URL адресу, например amazon.s4674.world может выглядеть как сайт amazon, но быть мошенническим.
+Так же определяй, что сайт содержит 18+ контент, или например являются сервисами сокращения ссылок (мошенничество и так далее.
 
-                                                                        типы сайтов: хороший, новости, форум, сократители ссылок, легитимный, (означает, что принадлежит известной компании), мошенничество, казино, 18+
+типы сайтов: хороший, новости, форум, сократители ссылок, легитимный, (означает, что принадлежит известной компании), мошенничество, казино, 18+
 
-                                                                        В ответе выдай (разделительные символы между ЧАСТЯМИ - "::": рассуждения::тип::оценка опасности сайта от 0 до 10 1, целым числом
-                                                                        Пример ответа, кавычки не считаются, "Сайт выглядит как легитимный адрес поисковой системы Google.  Нет никаких подозрительных поддоменов или странных символов в адресе.  Сам сайт отображает стандартную страницу поиска Google, без каких-либо признаков мошенничества, таких как всплывающие окна, подозрительные запросы на оплату или ссылки на азартные игры.  На сайте отсутствует контент 18 ::хороший :: 0"
-
-                                                                        url и title сайта для проверки, структура url - title: {before} ({url}) - {title}
-                                                                        """
+В ответе выдай (разделительные символы между ЧАСТЯМИ - "|": рассуждения коротко|тип|оценка опасности сайта от 0 до 10 1, целым числом
+Пример ответа: "Сайт Google | легитимный | 0"
+Другой пример: "Редирект на казино | казино | 8"
+url и title сайта для проверки, структура url - title: {url} - {title}"""
                             print("Пытаемся объяснить страницу")
-                            result = describe(prompt, img).split("::")
+                            img = open_screenshot(screenshot_path)
+                            result = describe(prompt, img).split("|")
 
                             print(f"{result[-3]}")
                             print(f"Тип        : {result[-2]}")
@@ -295,20 +262,16 @@ def handle_document(message):
                             else:
                                 print("Записываем в скам")
                                 scams.append(
-                                    {"type": result[1], "danger": result[2], "before_url": before, "url": url,
+                                    {"type": result[1], "danger": result[2], "url": url,
                                      "thoughts": result[0],
-                                     "before": before_domain, "domain": domain, "title": title,
+                                     "domain": domain, "title": title,
                                      "time": time.time() - time_start_domains})
                             try:
-                                with open("tempimg.png", "rb") as img_file:
+                                with open(screenshot_path, "rb") as img_file:
                                     bot.send_photo(message.chat.id, img_file,
-                                                   caption=f"""URL: {before[:100]} ({url[:100]}) - {title[:100]}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
+                                                   caption=f"""URL: {url[:100]} - {title[:100]}\n{result[-3]}\n\nТип        : {result[-2]}\nОпасность  : {result[-1]}\nРасчётное время : {time.strftime('%H:%M:%S', time.gmtime((((using_len - 1) - i) * 10)))}""".encode(
                                                        'utf-8'))
 
-                                try:
-                                    os.remove("tempimg.png")
-                                except:
-                                    pass
 
                             except:
                                 pass

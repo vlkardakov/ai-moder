@@ -1,39 +1,41 @@
-import os
 import google.generativeai as genai
-import os
 import numpy as np
 from mss import mss
 from PIL import Image
 import time
+import os
 
-api_keys = [
-    "AIzaSyAPL9cKR86Aj5nqXsIvD_YWDUZ7E8vEyec", # работает
-    "AIzaSyBVpBV7gnTa_XVoCFOcBY4oWRzY0hmGwXQ", # работает
-    #"AIzaSyArqyXBQrwXLYg26slozZG1BLnHfRpDEM4",
-    #"AIzaSyDj1cDXsTKkC7mMroHhIgg37X6MtqgjUmw",
-    "AIzaSyCF4gSrVqI7wqP8jfOdD7V-fDo_TAImflY", # 9
-    "AIzaSyDENOL9VDuCYYKsx_GkaYa_7qjrSPgiONM", # 10
-    "AIzaSyCfLsRDmgJcgbkVVFGXOzIOd4heFtsvnnM", # mail@vlkardakov.ru
-    #"AIzaSyBX2ERx5-x6tnctQgED7MK5YWBXHFkeQJ0", # 11
-    "AIzaSyA4BJ03mlU-hff2wqOH2Gh_YsqMMhcF1NE", #АБОБА
-    # "","","","","","","","",""
+# proxy = 'http://hAnuPVxQqi:DgH2Yc44lq@109.120.129.171:59597'
+# os.environ['http_proxy'] = proxy
+keys_proxies = [
+    {"key":"AIzaSyBm8TubjcNxTtzlZgElnY5ZuCXkADCAQRE", "proxy":'http://vova:2213@193.124.133.94:35068'},#1z`
+    {"key":'AIzaSyCpI5SpoP5T44PXGyi-uyHKV-g0N66eNFA', "proxy":'http://vova:2213@193.124.133.151:53136'}, #балбоб
+    {"key":'AIzaSyAthBC1Ew0-TTUBnJtpndD44I-7ZWvPhcw', "proxy":'http://vova:2213@193.124.133.184:38562'},#vity 19
+    {'key':"AIzaSyCL9WRRrGeCAAfWi-iLEwAkW1DLvepIRcY", "proxy":'http://germ:germ@194.31.73.4:38064'}, #v0681197@gmail.com
+    {'key':"AIzaSyA25EIdaG7hmsjF5Ry3GrroW0d0g24Oj5s", "proxy":'http://germ:germ@194.31.73.199:21863'}, # vitya.kardakov19@gmail.com
+    {'key':"AIzaSyDW3nj2rrEuJBNNMfybumVxVfZn2_wyOB8", "proxy":'http://germ:germ@194.31.73.93:40032'}, # vikt0r19.kardakov19@gmail.com
+    {'key':"AIzaSyBnfHaqOYL3h4eer1bV7nnN7U_KuGQqGkE", "proxy":'http://hAnuPVxQqi:DgH2Yc44lqgerm@109.120.129.171:59597'}, # dcookeiw2@gmail.com
+    #'',
+    #'',
 ]
 
+
+
 key_index = 0
-current_key = api_keys[0]
+current_key_proxy = keys_proxies[0]
 
 zaprosi_history = []
 
-def get_next_api_key():
+def get_next():
     global key_index
 
-    key_index = (key_index + 1) % len(api_keys) # Circular increment
-    api_key = api_keys[key_index]
+    key_index = (key_index + 1) % len(keys_proxies)
+    key_proxy = keys_proxies[key_index]
 
-    return api_key
+    return key_proxy
 
 def describe(zapros, img):
-    global key_index, api_keys, zaprosi_history, current_key
+    global key_index, keys_proxies, zaprosi_history, current_key
 
     for i in range(len(zaprosi_history) - 1, -1, -1):
         if zaprosi_history[i]["time"] - time.time() < 60:
@@ -41,15 +43,21 @@ def describe(zapros, img):
         else:
             del zaprosi_history[i]
 
-    if len(zaprosi_history) > 0:
-        #print("ПЕРЕКЛЮЧАЮСЬ...")
-        current_key = get_next_api_key()
-        print(f"ключ {current_key}")
-        zaprosi_history = []
+    current = get_next()
+    current_proxy = current["proxy"]
+    current_key = current["key"]
 
+
+    zaprosi_history = []
+    print(f"ключ {current_key}, прокси {current_proxy}")
+
+    os.environ['http_proxy'] = current_proxy
+    # os.environ['HTTP_PROXY'] = current_proxy
+    # os.environ['https_proxy'] = current_proxy
+    # os.environ['HTTPS_PROXY'] = current_proxy
     genai.configure(api_key=current_key)
 
-    model = genai.GenerativeModel('gemini-2.0-flash-exp')
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
     response = model.generate_content([
         f"запрос пользователя: {zapros}",

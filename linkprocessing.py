@@ -4,33 +4,35 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 
 def get_domain(url):
-    return urlparse(url).netloc  # Получаем домен
+    return urlparse(url).netloc
 
 def normal_filename(link):
-    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_") + ".png"
+    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_").replace("?", '').replace('=','').replace('%','') + ".png"
 
 def process_link(link):
-    options = webdriver.ChromeOptions()
-    options.add_argument("--log-level=3")
-    options.add_argument("--disable-software-rasterizer")
-    options.add_argument("--headless")
-    options.add_argument("--start-maximized")
+    try:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--log-level=3")
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--headless")
+        options.add_argument("--start-maximized")
 
-    driver = webdriver.Chrome(options=options)
-    output = normal_filename(link)
+        driver = webdriver.Chrome(options=options)
+        output = normal_filename(link)
+        # pass
+        if os.path.exists(output):
+            os.remove(output)
 
-    if os.path.exists(output):
-        os.remove(output)
+        driver.get(link)
+        title = driver.title
+        driver.save_screenshot(output)
+        driver.quit()
 
-    driver.get(link)
-    title = driver.title
-    driver.save_screenshot(output)
-    driver.quit()
+        print(f"Скриншот сохранен как {output}")
 
-    print(f"Скриншот сохранен как {output}")
-
-    return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}
-
+        return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}
+    except:
+        return None
 def process_links(links):
     with ThreadPoolExecutor(max_workers=4) as executor:  # 4 потока для ускорения
         results = list(executor.map(process_link, links))
