@@ -1,53 +1,28 @@
-Как залить на сервер:
-cd ..
-mkdir ai-moder
-cd ai-moder
-mkdir server.git
-cd server.git
-apt-get install git
-git init --bare
-cd hooks
-# создать файл post-receive с содержимым git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
-# можно заменить main на master
-chmod +x post-receive # пусть выполняется z
-далее в локальном репозитории:
-# как создать репозиторий
-# git init
-#
-# git add . # добавление файлов
-# git commit -m 'первый коммит'
-git remote add server 'ssh://пользователь@ip/ai-moder/server.git' # пользователь скорее всего root, ip - адрес сервера
-git push server main #или мастер
-
-# на сервере
-# установка pip
-apt-get update
-apt-get upgrade
-apt-get install python3-pip
-
-# установка драйвера для браузера
-snap install firefox
-apt  install firefox-geckodriver
-
-# библиотеки
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y git python3-pip firefox-geckodriver snapd
+sudo snap install firefox
+apt install python3-pip
 pip install --break-system-packages mss selenium opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
-
-# служба
-# создать файл /etc/systemd/system/aimoder
+sudo mkdir -p /ai-moder/server.git
+cd /ai-moder/server.git
+git init --bare
+sudo tee hooks/post-receive > /dev/null << EOF
+git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
+EOF
+sudo chmod +x hooks/post-receive
+sudo tee /etc/systemd/system/aimoder.service > /dev/null << EOF
 [Unit]
 Description=AI Moderation Bot
 After=network.target
 
 [Service]
 ExecStart=/usr/bin/python3 /ai-moder/bot_test.py
-WorkingDirectory=/ai-moder #Restart=always
-
+WorkingDirectory=/ai-moder
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
-# включение
-
+EOF
 sudo systemctl daemon-reload
 sudo systemctl enable aimoder
 sudo systemctl start aimoder
-
