@@ -19,9 +19,7 @@ def process_link(link):
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
 
-        # driver = webdriver.Chrome(options=options)
-        driver = webdriver.Firefox(options=options)
-
+        driver = webdriver.Chrome(options=options)
         output = normal_filename(link)
         # pass
         if os.path.exists(output):
