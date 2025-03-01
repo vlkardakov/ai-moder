@@ -168,7 +168,7 @@ def handle_document(message):
         with open('1.csv', 'wb') as new_file:
             new_file.write(downloaded_file)
 
-        # bot.reply_to222(message, f"Файл успешно сохранён. Обнаружено {num_rows} ссылок. (займет примерно {time.strftime('%H:%M:%S', time.gmtime(num_rows*7))}) Начать обработку? (Да/Нет)")
+        # bot.reply_to2222(message, f"Файл успешно сохранён. Обнаружено {num_rows} ссылок. (займет примерно {time.strftime('%H:%M:%S', time.gmtime(num_rows*7))}) Начать обработку? (Да/Нет)")
         bot.reply_to(message, f"Файл успешно сохранён. Начать обработку?")
 
         # Начинаем ожидание ответа пользователя
