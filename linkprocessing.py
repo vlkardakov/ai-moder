@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from urllib.parse import urlparse
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -11,7 +12,8 @@ def normal_filename(link):
 
 def process_link(link):
     try:
-        options = webdriver.ChromeOptions()
+        # options = webdriver.ChromeOptions()
+        options = Options()
         options.add_argument("--log-level=3")
         options.add_argument("--disable-software-rasterizer")
         options.add_argument("--headless")
