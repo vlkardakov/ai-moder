@@ -1,28 +1,45 @@
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y git python3-pip firefox-geckodriver snapd
+sudo apt install -y git python3-pip firefox-geckodriver snapd python3.12-venv
 sudo snap install firefox
-apt install python3-pip
-pip install --break-system-packages mss selenium opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
+
+# Создаем директорию проекта, если ещё не создана
+sudo mkdir -p /ai-moder
+
+# Создаем виртуальное окружение в папке /ai-moder
+python3.12 -m venv /ai-moder/venv
+
+# Всегда активируйте venv перед установкой библиотек!
+source /ai-moder/venv/bin/activate
+
+# Устанавливаем все Python-библиотеки через pip внутри venv
+pip install mss google-generativeai PyTelegramBotAPI deep-translator selenium opencv-python pandas pillow aiohttp numpy
+
+# Настройка bare-репозитория для автоматического деплоя
 sudo mkdir -p /ai-moder/server.git
 cd /ai-moder/server.git
 git init --bare
-sudo tee hooks/post-receive > /dev/null << EOF
+
+sudo tee hooks/post-receive > /dev/null << 'EOF'
 git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
 EOF
+
 sudo chmod +x hooks/post-receive
-sudo tee /etc/systemd/system/aimoder.service > /dev/null << EOF
+
+# Создаем systemd-сервис для автозапуска бота, обязательно используя интерпретатор из venv!
+sudo tee /etc/systemd/system/aimoder.service > /dev/null << 'EOF'
 [Unit]
 Description=AI Moderation Bot
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /ai-moder/bot_test.py
+ExecStart=/ai-moder/venv/bin/python /ai-moder/bot_test.py
 WorkingDirectory=/ai-moder
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
 sudo systemctl daemon-reload
 sudo systemctl enable aimoder
 sudo systemctl start aimoder
