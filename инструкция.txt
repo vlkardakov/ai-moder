@@ -9,7 +9,7 @@ git init --bare
 cd hooks
 # создать файл post-receive с содержимым git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
 # можно заменить main на master
-chmod +x post-receive # пусть выполняется
+chmod +x post-receive # пусть выполняется z
 далее в локальном репозитории:
 # как создать репозиторий
 # git init
