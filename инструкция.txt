@@ -1,0 +1,35 @@
+Как залить на сервер:
+cd ..
+mkdir ai-moder
+cd ai-moder
+mkdir server.git
+cd server.git
+apt-get install git
+git init --bare
+cd hooks
+# создать файл post-receive с содержимым git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
+# можно заменить main на master
+chmod +x post-receive # пусть выполняется
+далее в локальном репозитории:
+# как создать репозиторий
+# git init
+#
+# git add . # добавление файлов
+# git commit -m 'первый коммит'
+git remote add server 'ssh://пользователь@ip/ai-moder/server.git' # пользователь скорее всего root, ip - адрес сервера
+git push server main #или мастер
+
+# на сервере
+# установка pip
+apt-get update
+apt-get upgrade
+apt-get install python3-pip
+
+# установка драйвера для браузера
+snap install firefox
+apt  install firefox-geckodriver
+
+# библиотеки
+pip install PytelegramBotAPI google-generativeai
+
+
