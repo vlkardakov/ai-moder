@@ -30,6 +30,24 @@ snap install firefox
 apt  install firefox-geckodriver
 
 # библиотеки
-pip install PytelegramBotAPI google-generativeai
+pip install --break-system-packages mss selenium opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
 
+# служба
+# создать файл /etc/systemd/system/aimoder
+[Unit]
+Description=AI Moderation Bot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /ai-moder/bot_test.py
+WorkingDirectory=/ai-moder #Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
+# включение
+
+sudo systemctl daemon-reload
+sudo systemctl enable aimoder
+sudo systemctl start aimoder
 
