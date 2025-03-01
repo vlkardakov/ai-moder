@@ -12,6 +12,7 @@ def normal_filename(link):
 
 def process_link(link):
     # try:
+        print(1)
         # options = webdriver.ChromeOptions()
         options = Options()
         options.add_argument("--log-level=3")
