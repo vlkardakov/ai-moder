@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from urllib.parse import urlparse
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -24,8 +25,11 @@ def process_link(link):
         # Путь к драйверу Chromium
         driver_path = '/usr/lib/chromium-browser/chromedriver'
 
+        # Создаем объект Service
+        service = Service(executable_path=driver_path)
+
         # Создаем экземпляр WebDriver для Chromium
-        driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        driver = webdriver.Chrome(service=service, options=options)
 
         output = normal_filename(link)
         if os.path.exists(output):
