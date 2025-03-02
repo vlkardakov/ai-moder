@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 # ...
 
 options = webdriver.FirefoxOptions()
-serv = webdriver.FirefoxService( executable_path='venv/bin/geckodriver' )
 
 options.add_argument("--log-level=3")
 options.add_argument("--disable-software-rasterizer")
