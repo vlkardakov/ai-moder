@@ -67,11 +67,12 @@ def process_links(links):
             checked = np.append(checked, domain)
         else: print('pass')
 
+    save_checked(checked)
+
     driver.quit()
     return results
 
 if __name__ == "__main__":
-    print(111)
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
 
     data = process_links(links)
