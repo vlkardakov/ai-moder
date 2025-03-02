@@ -41,7 +41,7 @@ def process_link(driver, link):
 
         print(f"Скриншот сохранен как {output}")
 
-        return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}, checked
+        return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}
     except Exception as e:
         print(e)
         return None
