@@ -21,7 +21,7 @@ def process_link(link):
     options.add_argument("--headless")
     options.add_argument("--start-maximized")
 
-    driver = webdriver.Firefox(service=webdriver.firefox.service.Service("/ai-moder/venv/bin/geckodriver"),
+    driver = webdriver.Chrome(service=webdriver.firefox.service.Service("/ai-moder/venv/bin/geckodriver"),
                                options=options)
 
     output = normal_filename(link)
