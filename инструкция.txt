@@ -16,7 +16,7 @@ echo "deb [signed-by=/usr/share/keyrings/packages.mozilla.org.gpg] https://packa
 sudo apt update
 sudo apt install firefox
 
-pip install --break-system-packages mss selenium opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
+pip install mss selenium opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
 cd
 cd ..
 mkdir -p ai-moder/server.git

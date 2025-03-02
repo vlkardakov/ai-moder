@@ -84,6 +84,7 @@ def process_links(links):
     return results
 
 if __name__ == "__main__":
+    print(111)
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
 
     data = process_links(links)
