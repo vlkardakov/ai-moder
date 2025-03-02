@@ -5,6 +5,8 @@ import os, time
 from concurrent.futures import ThreadPoolExecutor
 from get_domain import get_domain
 import numpy as np
+from sys import maxsize
+np.set_printoptions(threshold=maxsize)
 
 
 def save_checked(checked):
