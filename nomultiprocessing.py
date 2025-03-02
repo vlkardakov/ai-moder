@@ -5,11 +5,16 @@ from urllib.parse import urlparse
 import os
 from concurrent.futures import ThreadPoolExecutor
 
+
 def get_domain(url):
     return urlparse(url).netloc
 
+
 def normal_filename(link):
-    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_").replace("?", '').replace('=','').replace('%','') + ".png"
+    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":",
+                                                                                                          "_").replace(
+        "?", '').replace('=', '').replace('%', '') + ".png"
+
 
 def process_link(link):
     try:
@@ -41,10 +46,12 @@ def process_link(link):
         print(f"Ошибка при обработке {link}: {e}")
         return None
 
+
 def process_links(links):
     with ThreadPoolExecutor(max_workers=4) as executor:  # 4 потока для ускорения
         results = list(executor.map(process_link, links))
     return results
+
 
 if __name__ == "__main__":
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
