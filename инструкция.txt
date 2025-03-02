@@ -1,6 +1,9 @@
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y git python3-pip firefox-geckodriver snapd python3.12-venv
+sudo apt install -y git python3-pip snapd python3.12-venv
+
+# Устанавливаем Firefox и Geckodriver
 sudo snap install firefox
+sudo apt install -y firefox-geckodriver
 
 # Создаем директорию проекта, если ещё не создана
 sudo mkdir -p /ai-moder
@@ -10,6 +13,13 @@ python3.12 -m venv /ai-moder/venv
 
 # Всегда активируйте venv перед установкой библиотек!
 source /ai-moder/venv/bin/activate
+
+# Скачиваем последнюю версию Geckodriver и кидаем в venv/bin/
+GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep '"tag_name":' | cut -d '"' -f 4)
+wget https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-$GECKO_VERSION-linux64.tar.gz
+tar -xzf geckodriver-$GECKO_VERSION-linux64.tar.gz
+mv geckodriver /ai-moder/venv/bin/
+rm geckodriver-$GECKO_VERSION-linux64.tar.gz
 
 # Устанавливаем все Python-библиотеки через pip внутри venv
 pip install mss google-generativeai PyTelegramBotAPI deep-translator selenium opencv-python pandas pillow aiohttp numpy
