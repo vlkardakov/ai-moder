@@ -1,20 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.opera import OperaDriverManager
 from urllib.parse import urlparse
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-
 def get_domain(url):
     return urlparse(url).netloc
 
-
 def normal_filename(link):
-    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":",
-                                                                                                          "_").replace(
-        "?", '').replace('=', '').replace('%', '') + ".png"
-
+    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":", "_").replace("?", '').replace('=','').replace('%','') + ".png"
 
 def process_link(link):
     try:
@@ -24,11 +18,11 @@ def process_link(link):
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
 
-        # Используем webdriver_manager для получения пути к драйверу
-        driver_path = OperaDriverManager().install()
+        # Путь к драйверу Opera
+        driver_path = 'venv/bin/operadriver'  # Укажите путь к своему opera driver
 
-        # Создаем экземпляр драйвера Opera
-        driver = webdriver.Opera(executable_path=driver_path, options=options)
+        # Создаем экземпляр OperaDriver
+        driver = webdriver.Opera(options=options)
 
         output = normal_filename(link)
         if os.path.exists(output):
@@ -46,12 +40,10 @@ def process_link(link):
         print(f"Ошибка при обработке {link}: {e}")
         return None
 
-
 def process_links(links):
     with ThreadPoolExecutor(max_workers=4) as executor:  # 4 потока для ускорения
         results = list(executor.map(process_link, links))
     return results
-
 
 if __name__ == "__main__":
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
