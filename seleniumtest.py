@@ -1,8 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-# ...
-
 options = webdriver.FirefoxOptions()
 
 options.add_argument("--log-level=3")

@@ -1,7 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
 import csv
-
 def read_csv(path):
   first = []
   try:
@@ -17,7 +16,6 @@ def read_csv(path):
   except Exception as e:
     print(f"Ошибка при чтении файла: {e}")
     return []
-
 def connect_database():
     try:
         connection = mysql.connector.connect(

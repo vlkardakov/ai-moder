@@ -23,7 +23,7 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from linkprocessing import process_links
+from linkprocessing import process_links, save_checked, load_checked, pithon
 from save import save
 from decode import process_url, final_link
 
@@ -68,26 +68,6 @@ async def get_page_titles(urls):
         tasks = [get_page_title(session, url) for url in urls]
         titles = await asyncio.gather(*tasks)
         return titles
-
-
-def pithon(code):
-    global result
-    try:
-        local_vars = {}
-        exec(code, {}, local_vars)  # Используем локальный словарь для хранения переменных
-        return local_vars.get('result')  # Возвращаем значение переменной result
-    except Exception as e:
-        return e
-
-
-def save_checked(checked):
-    with open("checked_domains.txt", "w") as f:
-        f.write(str(checked))
-
-
-def load_checked():
-    with open("checked_domains.txt", "r") as f:
-        return pithon(f"result = {f.read()}")
 
 
 def save_verified(checked):
