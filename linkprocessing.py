@@ -62,8 +62,9 @@ def process_links(links):
 
     for link in links:
         domain = get_domain(link)
-        if not domain in checked:
 
+        if not domain in checked:
+            print(f'Домена {domain} нет в {checked}!')
             temp_result = process_link(driver, link)
             if temp_result: results.append(temp_result)
             checked = np.append(checked, domain)
