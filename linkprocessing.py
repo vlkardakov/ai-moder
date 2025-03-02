@@ -11,7 +11,7 @@ np.set_printoptions(threshold=maxsize)
 
 def save_checked(checked):
     with open("checked_domains.txt", "w") as f:
-        f.write(str(checked))
+        f.write(f'{checked}')
 
 def pithon(code):
     global result
