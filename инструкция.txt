@@ -1,15 +1,20 @@
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git python3-pip snapd python3.12-venv
 sudo snap install firefox
-sudo apt install -y firefox-geckodriver
+apt install unzip
 sudo mkdir -p /ai-moder
 python3.12 -m venv /ai-moder/venv
 source /ai-moder/venv/bin/activate
-GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep '"tag_name":' | cut -d '"' -f 4)
-wget https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-$GECKO_VERSION-linux64.tar.gz
-tar -xzf geckodriver-$GECKO_VERSION-linux64.tar.gz
-mv geckodriver /ai-moder/venv/bin/
-rm geckodriver-$GECKO_VERSION-linux64.tar.gz
+sudo dpkg -i opera-stable_87.0.4390.36_amd64.deb
+sudo apt-get install -f
+
+
+wget https://github.com/operasoftware/operachromiumdriver/releases/download/v.132.0.6834.209/operadriver_linux64.zip
+unzip operadriver_linux64.zip
+sudo mv operadriver_linux64/operadriver venv/bin/operadriver
+sudo chmod +x venv/bin/operadriver
+
+
 pip install mss google-generativeai PyTelegramBotAPI deep-translator selenium opencv-python pandas pillow aiohttp numpy
 sudo mkdir -p /ai-moder/server.git
 cd /ai-moder/server.git
