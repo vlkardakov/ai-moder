@@ -62,7 +62,8 @@ def process_link(driver, link):
             return None
 
         return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}, checked
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 def process_links(links):
