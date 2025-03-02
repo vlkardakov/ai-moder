@@ -6,8 +6,6 @@ from concurrent.futures import ThreadPoolExecutor
 from get_domain import get_domain
 import numpy as np
 
-from test_of_rep import checked_domains
-
 
 def save_checked(checked):
     with open("checked_domains.txt", "w") as f:
