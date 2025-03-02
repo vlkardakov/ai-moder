@@ -15,6 +15,7 @@ def normal_filename(link):
 
 def process_link(link):
     try:
+        print('задаём драйвер')
         options = Options()
         options.add_argument("--log-level=3")
         options.add_argument("--disable-software-rasterizer")
@@ -36,7 +37,7 @@ def process_link(link):
         service = Service(executable_path=driver_path)
 
         driver = webdriver.Chrome(service=service, options=options)
-
+        print("Драйвыер заадн")
         output = normal_filename(link)
         if os.path.exists(output):
             os.remove(output)
@@ -56,8 +57,8 @@ if __name__ == "__main__":
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
     results = []
     for link in links:
+
         result = process_link(link)
         results.append(result)
     for res in results:
-        if res:
-            print(res)
+        print(res)
