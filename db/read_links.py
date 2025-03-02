@@ -13,7 +13,7 @@ def count_ago(date_str):
 
 
 def main():
-    date = '2025-03-02 15:00:00'
+    date = '2025-03-02 16:50:00'
     connection = connect_database()
     cursor = connection.cursor()
     time1 = time.time()
