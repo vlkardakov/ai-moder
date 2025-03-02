@@ -5,14 +5,7 @@ apt install unzip
 sudo mkdir -p /ai-moder
 python3.12 -m venv /ai-moder/venv
 source /ai-moder/venv/bin/activate
-sudo dpkg -i opera-stable_87.0.4390.36_amd64.deb
 sudo apt-get install -f
-
-
-wget https://github.com/operasoftware/operachromiumdriver/releases/download/v.132.0.6834.209/operadriver_linux64.zip
-unzip operadriver_linux64.zip
-sudo mv operadriver_linux64/operadriver venv/bin/operadriver
-sudo chmod +x venv/bin/operadriver
 
 
 pip install mss google-generativeai PyTelegramBotAPI deep-translator selenium opencv-python pandas pillow aiohttp numpy

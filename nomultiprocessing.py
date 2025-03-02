@@ -17,6 +17,7 @@ def process_link(link):
         options.add_argument("--disable-software-rasterizer")
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
+        options.add_argument("--start-maximized")
 
         # Путь к драйверу Opera
         driver_path = 'venv/bin/operadriver'  # Укажите путь к своему opera driver
