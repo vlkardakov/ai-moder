@@ -6,6 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 from get_domain import get_domain
 import numpy as np
 
+from test_of_rep import checked_domains
+
+
 def save_checked(checked):
     with open("checked_domains.txt", "w") as f:
         f.write(str(checked))
@@ -28,38 +31,17 @@ def normal_filename(link):
 
 def process_link(driver, link):
     try:
-        # # options = webdriver.ChromeOptions()
+        output = normal_filename(link)
+        # pass
+        if os.path.exists(output):
+            os.remove(output)
 
-        # options = Options()
-        # options.add_argument("--log-level=3")
-        # options.add_argument("--disable-software-rasterizer")
-        # options.add_argument("--headless")
-        # options.add_argument("--start-maximized")
-
-        # #driver = webdriver.Chrome(options=options)
+        driver.get(link)
+        title = driver.title
+        driver.save_screenshot(output)
 
 
-        # driver = webdriver.Firefox(options=options)
-
-        domain = get_domain(link)
-
-        if not domain in checked:
-            output = normal_filename(link)
-            # pass
-            if os.path.exists(output):
-                os.remove(output)
-
-            driver.get(link)
-            title = driver.title
-            driver.save_screenshot(output)
-
-            checked = np.append(checked, domain)
-
-            # driver.quit()
-            print(f"Скриншот сохранен как {output}")
-        else:
-            print('pass...')
-            return None
+        print(f"Скриншот сохранен как {output}")
 
         return {"url": link, "title": title, "screenshot": output, "domain": get_domain(link)}, checked
     except Exception as e:
@@ -68,6 +50,7 @@ def process_link(driver, link):
 
 def process_links(links):
     results = []
+    checked = load_checked()
 
     options = Options()
     options.add_argument("--log-level=3")
@@ -78,8 +61,13 @@ def process_links(links):
     driver = webdriver.Firefox(options=options)
 
     for link in links:
-        temp_result = process_link(driver, link)
-        if temp_result: results.append(temp_result)
+        domain = get_domain(link)
+        if not domain in checked_domains:
+
+            temp_result = process_link(driver, link)
+            if temp_result: results.append(temp_result)
+            checked = np.append(checked, domain)
+        else: print('pass')
 
     driver.quit()
     return results
