@@ -60,7 +60,7 @@ def process_links(links):
 
     for link in links:
         domain = get_domain(link)
-        if not domain in checked_domains:
+        if not domain in checked:
 
             temp_result = process_link(driver, link)
             if temp_result: results.append(temp_result)
