@@ -12,9 +12,9 @@ def get_domain(url):
 
 
 def normal_filename(link):
-    return "screenshots/" + link.replace("https://", "").replace("http://", "").replace("/", "_").replace(":",
-                                                                                                          "_").replace(
-        "?", "").replace("=", "").replace("%", "") + ".png"
+    return "screenshots/" + link.replace("https://", "").replace("http://", "") \
+        .replace("/", "_").replace(":", "_").replace("?", "").replace("=", "") \
+        .replace("%", "") + ".png"
 
 
 def process_link(link):
@@ -24,18 +24,21 @@ def process_link(link):
         options.add_argument("--disable-software-rasterizer")
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--incognito")
 
-        # Путь к исполняемому файлу Chromium
-        options.binary_location = '/usr/bin/chromium-browser'
-
-        # Уникальная директория для профиля
+        # Создаем уникальную временную директорию для профиля
         temp_dir = tempfile.mkdtemp()
-        # options.add_argument(f"--user-data-dir={temp_dir}")
+        options.add_argument(f"--user-data-dir={temp_dir}")
+
+        # Путь к бинарнику Chromium
+        options.binary_location = '/usr/bin/chromium-browser'
 
         # Путь к драйверу Chromium
         driver_path = '/usr/lib/chromium-browser/chromedriver'
-
         service = Service(executable_path=driver_path)
+
         driver = webdriver.Chrome(service=service, options=options)
 
         output = normal_filename(link)
@@ -55,7 +58,8 @@ def process_link(link):
 
 
 def process_links(links):
-    with ThreadPoolExecutor(max_workers=4) as executor:  # 4 потока для ускорения
+    # Для диагностики попробуй запустить и последовательно, чтобы понять, не дело ли в параллельности
+    with ThreadPoolExecutor(max_workers=4) as executor:
         results = list(executor.map(process_link, links))
     return results
 
