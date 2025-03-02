@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.opera import OperaDriverManager
 from urllib.parse import urlparse
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -18,10 +19,10 @@ def process_link(link):
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
 
-        # Путь к драйверу Opera
-        driver_path = 'venv/bin/operadriver'  # Укажите путь к своему opera driver
+        # Используем webdriver_manager для получения пути к драйверу
+        driver_path = OperaDriverManager().install()
 
-        # Создаем экземпляр OperaDriver
+        # Создаем экземпляр драйвера Opera
         driver = webdriver.Opera(executable_path=driver_path, options=options)
 
         output = normal_filename(link)
