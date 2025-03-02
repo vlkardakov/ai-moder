@@ -3,19 +3,15 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from urllib.parse import urlparse
 import os
-from concurrent.futures import ThreadPoolExecutor
 import tempfile
-
 
 def get_domain(url):
     return urlparse(url).netloc
 
-
 def normal_filename(link):
     return "screenshots/" + link.replace("https://", "").replace("http://", "") \
-        .replace("/", "_").replace(":", "_").replace("?", "").replace("=", "") \
-        .replace("%", "") + ".png"
-
+           .replace("/", "_").replace(":", "_").replace("?", "").replace("=", "") \
+           .replace("%", "") + ".png"
 
 def process_link(link):
     try:
@@ -56,17 +52,12 @@ def process_link(link):
         print(f"Ошибка при обработке {link}: {e}")
         return None
 
-
-def process_links(links):
-    # Для диагностики попробуй запустить и последовательно, чтобы понять, не дело ли в параллельности
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        results = list(executor.map(process_link, links))
-    return results
-
-
 if __name__ == "__main__":
     links = ["https://google.com", "https://amazon.com", "https://yandex.ru", "https://minilink.pro"]
-    data = process_links(links)
-    for el in data:
-        if el:
-            print(el)
+    results = []
+    for link in links:
+        result = process_link(link)
+        results.append(result)
+    for res in results:
+        if res:
+            print(res)
