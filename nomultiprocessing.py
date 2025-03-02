@@ -30,7 +30,7 @@ def process_link(link):
 
         # Уникальная директория для профиля
         temp_dir = tempfile.mkdtemp()
-        options.add_argument(f"--user-data-dir={temp_dir}")
+        # options.add_argument(f"--user-data-dir={temp_dir}")
 
         # Путь к драйверу Chromium
         driver_path = '/usr/lib/chromium-browser/chromedriver'
