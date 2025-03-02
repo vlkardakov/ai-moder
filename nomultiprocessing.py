@@ -17,13 +17,15 @@ def process_link(link):
         options.add_argument("--disable-software-rasterizer")
         options.add_argument("--headless")
         options.add_argument("--start-maximized")
-        options.add_argument("--start-maximized")
 
-        # Путь к драйверу Opera
-        driver_path = 'venv/bin/operadriver'  # Укажите путь к своему opera driver
+        # Путь к исполняемому файлу Chromium
+        options.binary_location = '/usr/bin/chromium-browser'
 
-        # Создаем экземпляр OperaDriver
-        driver = webdriver.Opera(options=options)
+        # Путь к драйверу Chromium
+        driver_path = '/usr/lib/chromium-browser/chromedriver'
+
+        # Создаем экземпляр WebDriver для Chromium
+        driver = webdriver.Chrome(executable_path=driver_path, options=options)
 
         output = normal_filename(link)
         if os.path.exists(output):
