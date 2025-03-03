@@ -72,7 +72,7 @@ def count_ago(date_str):
 
 def main():
     date = '2025-01-02 00:00:00'
-    limit = 1
+    limit = 100000
     connection = connect_database()
     cursor = connection.cursor()
     time1 = time.time()

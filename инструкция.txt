@@ -1,20 +1,20 @@
 apt-get update
 apt-get upgrade
 
-apt-get install sudo
-apt-get install python3-pip
+apt-get install -y sudo
+apt-get install -y python3-pip
 
 sudo apt update
 sudo apt upgrade
 
-apt install libgl1-mesa-glx
+apt install -y libgl1-mesa-glx
 
-sudo apt install dirmngr ca-certificates software-properties-common apt-transport-https wget -y
+sudo apt install -y dirmngr ca-certificates software-properties-common apt-transport-https wget -y
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | gpg --dearmor | sudo tee /usr/share/keyrings/packages.mozilla.org.gpg > /dev/null
 gpg --quiet --no-default-keyring --keyring /usr/share/keyrings/packages.mozilla.org.gpg --fingerprint | awk '/pub/{getline; gsub(/^ +| +$/,""); print "\n"$0"\n"}'
 echo "deb [signed-by=/usr/share/keyrings/packages.mozilla.org.gpg] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
 sudo apt update
-sudo apt install firefox
+sudo apt install -y firefox
 
 pip install mss selenium tldextract mysql-connector-python opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
 cd
