@@ -1,11 +1,11 @@
 apt-get update
-apt-get upgrade
+apt-get -y upgrade
 
 apt-get install -y sudo
 apt-get install -y python3-pip
 
 sudo apt update
-sudo apt upgrade
+sudo apt -y upgrade
 
 apt install -y libgl1-mesa-glx
 
@@ -16,12 +16,20 @@ echo "deb [signed-by=/usr/share/keyrings/packages.mozilla.org.gpg] https://packa
 sudo apt update
 sudo apt install -y firefox
 
-pip install mss selenium tldextract mysql-connector-python opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
+pip install --break-system-packages mss selenium tldextract mysql-connector-python opencv-python google-generativeai pandas PyTelegramBotAPI deep-translator pillow asyncio aiohttp numpy
 cd
 cd ..
 mkdir -p ai-moder/server.git
 cd ai-moder/server.git
-apt-get install git
+apt-get -y install git
+
+sudo apt-get -y install libaio1
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.33-1_all.deb
+dpkg -i mysql-apt-config_0.8.33-1_all.deb
+sudo apt update
+sudo apt-get update
+sudo apt install mysql-server
+
 git init --bare
 cat << EOF > hooks/post-receive
 git --work-tree=/ai-moder --git-dir=/ai-moder/server.git checkout -f main
